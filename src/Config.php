@@ -26,56 +26,22 @@ final class Config
 
     /**
      * Constructor
-     * @param array $config
+     * @param array $config Array with configuration parameters
+     * - api_key: string - The API key for accessing the OpenWeather API.
+     * - language: string - The language code (ISO 639-1) for API responses. Defaults to 'en'.
+     * - date_format: string - PHP date format for displaying dates (default 'd/m/Y').
+     * - time_format: string - PHP date format for displaying times (default 'h:i A').
+     * - day_format: string - PHP date format for displaying days of the week (default, 'l').
+     * - temperature: 'c'|'f'|'k' - The unit of temperature: 'c' for Celsius, 'f' for Fahrenheit, 'k' for Kelvin.
      */
     public function __construct(array $config = [])
     {
-        $defaultConfig = require __DIR__.'/config/openweather.php';
+        $defaultConfig = require __DIR__ . '/config/openweather.php';
 
         $this->config = array_merge($defaultConfig, $config);
 
         $this->validate();
-        $this->setTemperature($this->config['temperature']);
-    }
-
-    /**
-     * Convert temperature to valid API format
-     * @param string $temperature
-     * @return void
-     */
-    private function setTemperature(&$temperature): void
-    {
-        switch ($temperature) {
-            case 'c':
-                $temperature = 'metric';
-                break;
-            case 'f':
-                $temperature = 'imperial';
-                break;
-            case 'k':
-                $temperature = null;
-                break;
-        }
-    }
-
-    /**
-     * Validate configuration array
-     * @throws \Bejblade\OpenWeather\Exception\InvalidConfigurationException
-     * @return void
-     */
-    private function validate(): void
-    {
-        if (empty($this->config['api_key'])) {
-            throw new InvalidConfigurationException('API key is not set');
-        }
-
-        if (!in_array($this->config['temperature'], self::TEMPERATURE_UNITS)) {
-            throw new InvalidConfigurationException("Invalid temparature unit: {$this->config['temperature']}");
-        }
-
-        if (!in_array($this->config['api_version'], self::API_VERSIONS)) {
-            throw new InvalidConfigurationException("Invalid API version: {$this->config['api_version']}");
-        }
+        $this->config['temperature'] = $this->setTemperature($this->config['temperature']);
     }
 
     /**
@@ -91,5 +57,43 @@ final class Config
         }
 
         return $this->config[$key];
+    }
+
+    /**
+     * Convert temperature to valid API format
+     * @param string $temperature
+     * @return string|null
+     */
+    private function setTemperature($temperature): string|null
+    {
+        return match ($temperature) {
+            'c' => 'metric',
+            'f' => 'imperial',
+            'k' => null
+        };
+    }
+
+    /**
+     * Validate configuration array
+     * @throws \Bejblade\OpenWeather\Exception\InvalidConfigurationException
+     * @return void
+     */
+    private function validate(): void
+    {
+        $requiredKeys = ['api_key', 'api_version', 'geo_api_version', 'language', 'date_format', 'time_format', 'day_format', 'temperature', 'url'];
+
+        foreach ($requiredKeys as $requiredKey) {
+            if (empty($this->config[$requiredKey])) {
+                throw new InvalidConfigurationException("{$requiredKey} is not set");
+            }
+        }
+
+        if (!in_array($this->config['temperature'], self::TEMPERATURE_UNITS)) {
+            throw new InvalidConfigurationException("Invalid temparature unit: {$this->config['temperature']}");
+        }
+
+        if (!in_array($this->config['api_version'], self::API_VERSIONS)) {
+            throw new InvalidConfigurationException("Invalid API version: {$this->config['api_version']}");
+        }
     }
 }
