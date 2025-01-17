@@ -22,7 +22,7 @@ class Wind
      * Wind gust in meter/sec or miles/hour
      * @var int
      */
-    public ?int $gust;
+    public ?float $gust;
 
     public function __construct(array $data)
     {

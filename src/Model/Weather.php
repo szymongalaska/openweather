@@ -82,19 +82,19 @@ class Weather
      * Precipitation of rain in mm/h
      * @var int|null
      */
-    public ?int $rain;
+    public ?float $rain;
 
     /**
      * Precipitation of snow in mm/h
-     * @var int|null
+     * @var float|null
      */
-    public ?int $snow;
+    public ?float $snow;
 
     /**
      * Date and time of last data calculation
      * @var \DateTime
      */
-    public \DateTime $last_updated;
+    private \DateTime $last_updated;
 
     /**
      * Date format applied to `$last_updated`
@@ -112,7 +112,7 @@ class Weather
     public string $units;
 
 
-    public function __construct(array $data, string $units, ?string $date_format, ?string $timezone = null)
+    public function __construct(array $data, string $units, ?string $date_format = null, ?string $timezone = null)
     {
         $this->weather = $data['weather'][0]['main'];
         $this->description = $data['weather'][0]['description'];
@@ -129,13 +129,13 @@ class Weather
         $this->rain = $data['rain']['1h'] ?? null;
         $this->snow = $data['snow']['1h'] ?? null;
 
-        $this->last_updated = new \DateTime('@'.$data['dt']);
+        $this->last_updated = new \DateTime('@' . $data['dt']);
 
         if ($timezone) {
             $this->last_updated->setTimezone(new \DateTimeZone($timezone));
         }
 
-        $this->date_format = $date_format ?? 'd/M/Y H:i';
+        $this->date_format = $date_format ?? 'd/m/Y H:i';
 
         $this->units = $units;
 
@@ -166,5 +166,21 @@ class Weather
     public function isSnowing(): bool
     {
         return $this->snow > 0;
+    }
+
+    /**
+     * Weather data is updated every 10 minutes, check if 10 minutes passed since last fetch.
+     * @return bool
+     */
+    public function isUpdateAvailable(): bool
+    {
+        // Calculate difference in minutes
+        $diff = abs((new \DateTime('now', $this->last_updated->getTimezone()))->getTimestamp() - $this->last_updated->getTimestamp()) * 60;
+
+        if ($diff >= 10) {
+            return true;
+        }
+
+        return false;
     }
 }

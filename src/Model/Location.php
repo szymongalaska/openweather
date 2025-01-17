@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Bejblade\OpenWeather\Model;
 
+use Bejblade\OpenWeather\Endpoint\WeatherEndpoint;
+
 class Location
 {
     /**
@@ -76,11 +78,24 @@ class Location
 
     /**
      * Set weather
-     * @param \Bejblade\OpenWeather\Model\Weather $weather
-     * @return \Bejblade\OpenWeather\Model\Weather
+     * @param \Bejblade\OpenWeather\Endpoint\WeatherEndpoint $weatherEndpoint Configured weather endpoint
+     * @return \Bejblade\OpenWeather\Model\Weather|null
      */
-    public function setWeather(Weather $weather): Weather
+    public function getCurrentWeather(WeatherEndpoint $weatherEndpoint): Weather|null
     {
-        return $this->weather = $weather;
+        if (!$this->hasWeather() || $this->weather->isUpdateAvailable()) {
+            $this->weather = $weatherEndpoint->callWithLocation($this);
+        }
+
+        return $this->weather;
+    }
+
+    /**
+     * Checks if weather
+     * @return bool
+     */
+    public function hasWeather(): bool
+    {
+        return $this->weather !== null;
     }
 }
