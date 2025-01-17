@@ -80,12 +80,9 @@ final class Config
      */
     private function validate(): void
     {
-        $requiredKeys = ['api_key', 'api_version', 'geo_api_version', 'language', 'date_format', 'time_format', 'day_format', 'temperature', 'url'];
 
-        foreach ($requiredKeys as $requiredKey) {
-            if (empty($this->config[$requiredKey])) {
-                throw new InvalidConfigurationException("{$requiredKey} is not set");
-            }
+        if (empty($this->config['api_key'])) {
+            throw new InvalidConfigurationException("API KEY is not set");
         }
 
         if (!in_array($this->config['temperature'], self::TEMPERATURE_UNITS)) {
