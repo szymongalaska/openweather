@@ -9,5 +9,6 @@ return [
     'time_format' => 'h:i A',
     'day_format' => 'l',
     'temperature' => 'c',
+    'timezone' => 'UTC',
     'url' => 'https://api.openweathermap.org/',
 ];

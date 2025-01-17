@@ -32,6 +32,7 @@ final class Config
      * - date_format: string - PHP date format for displaying dates (default 'd/m/Y').
      * - time_format: string - PHP date format for displaying times (default 'h:i A').
      * - day_format: string - PHP date format for displaying days of the week (default, 'l').
+     * - timezone: string - PHP supported timezone (default 'UTC')
      * - temperature: 'c'|'f'|'k' - The unit of temperature: 'c' for Celsius, 'f' for Fahrenheit, 'k' for Kelvin.
      */
     public function __construct(array $config = [])
