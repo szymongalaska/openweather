@@ -10,7 +10,7 @@ use Bejblade\OpenWeather\Model\Location;
 /**
  * Reverse Geocoding endpoint. Fetch Location data by latitude and longitute
  */
-final class GeocodingReverseEndpoint extends Endpoint
+class GeocodingReverseEndpoint extends Endpoint
 {
     /**
      * @param array{lat:int, lon:int, limit:int} $options Parameters to use in call

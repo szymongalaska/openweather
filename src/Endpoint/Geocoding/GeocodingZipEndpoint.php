@@ -10,7 +10,7 @@ use Bejblade\OpenWeather\Model\Location;
 /**
  * Zip Geocoding endpoint. Fetch Location data by zip code, country code
  */
-final class GeocodingZipEndpoint extends Endpoint
+class GeocodingZipEndpoint extends Endpoint
 {
     /**
      * @param array{zip:string} $options Parameters to use in call

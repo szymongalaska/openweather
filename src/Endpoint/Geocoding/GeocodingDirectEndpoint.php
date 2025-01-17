@@ -10,13 +10,13 @@ use Bejblade\OpenWeather\Model\Location;
 /**
  * Direct Geocoding endpoint. Fetch Location data by city name, state code and country code
  */
-final class GeocodingDirectEndpoint extends Endpoint
+class GeocodingDirectEndpoint extends Endpoint
 {
     /**
      * @param array{q:string, limit:int} $options Parameters to use in call
-     * 
-     * - `q` parameter is required and needs to be in this format `city_name, state_code, country_code`
-     * 
+     *
+     * - `q` parameter is required and needs to be in this format `city_name, state_code, country_code` (state_code only available when country_code is 'US')
+     *
      * @return Location[]
      */
     public function call(array $options = [])
