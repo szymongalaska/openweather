@@ -70,7 +70,7 @@ final class Config
         return match ($temperature) {
             'c' => 'metric',
             'f' => 'imperial',
-            'k' => null
+            'k' => 'standard'
         };
     }
 
