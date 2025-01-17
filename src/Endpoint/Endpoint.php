@@ -13,21 +13,20 @@ use Bejblade\OpenWeather\OpenWeatherClient;
 abstract class Endpoint implements EndpointInterface
 {
     /**
-     * API version to use in endpoint request
-     * @var string
-     */
+    * API version to use in endpoint request
+    * @var string
+    */
     protected string $api_version;
-
     /**
      * Client used to call API
      * @var OpenWeatherClient
      */
     protected OpenWeatherClient $client;
 
-    public function __construct(OpenWeatherClient $client, string $api_version)
+    public function __construct(OpenWeatherClient $client, array $config)
     {
         $this->client = $client;
-        $this->api_version = $api_version;
+        $this->validateConfiguration($config);
     }
 
     /**
@@ -65,6 +64,15 @@ abstract class Endpoint implements EndpointInterface
     protected function validate(array $options): void
     {
         $this->validateOptionsSupport($options);
+    }
+
+    protected function validateConfiguration(array $config): void
+    {
+        if (empty($config['api_version'])) {
+            throw new \InvalidArgumentException('Missing API Version configuration');
+        }
+
+        $this->api_version = $config['api_version'];
     }
 
     /**
