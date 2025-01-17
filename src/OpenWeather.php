@@ -77,7 +77,7 @@ class OpenWeather
      * Register endpoints in their corresponding arrays
      * @return void
      */
-    private function registerEndpoints(): void
+    protected function registerEndpoints(): void
     {
         $this->endpoints = [
             'weather' => new Endpoint\WeatherEndpoint($this->client, [
@@ -85,7 +85,8 @@ class OpenWeather
                 'date_format' => $this->config->get('date_format'),
                 'time_format' => $this->config->get('time_format'),
                 'day_format' => $this->config->get('day_format'),
-                'temperature' => $this->config->get('temperature')
+                'temperature' => $this->config->get('temperature'),
+                'timezone' => $this->config->get('timezone'),
         ]),
         ];
 
@@ -101,25 +102,38 @@ class OpenWeather
     }
 
     /**
+     * Get Weather by Location object
+     * @param \Bejblade\OpenWeather\Model\Location $location
+     * @return Model\Weather
+     */
+    public function getWeatherByLocation(\Bejblade\OpenWeather\Model\Location $location)
+    {
+        return $location->getCurrentWeather($this->getEndpoint('weather'));
+    }
+
+    /**
      * Find geolocation by location name. Returns an array of `Location`
-     * @param array{city_name:string, state_code:string|null, country_code:string|null} $query Array with search data
+     * @param string $city_name
      * @param int $limit Response data limit. Default 1.
+     * @param string|null $state_code Only available when country code is 'US'
+     * @param string|null $country_code ISO 3166 country code
      * @return Model\Location[]
      */
-    public function findLocationByName(array $query, int $limit = 1)
+    public function findLocationByName(string $city_name, int $limit = 1, ?string $state_code = null, ?string $country_code = null)
     {
-        return $this->getGeoEndpoint('direct')->call(['q' => implode(',', $query), 'limit' => $limit]);
+        $query = implode(',', [$city_name, $state_code, $country_code]);
+        return $this->getGeoEndpoint('direct')->call(['q' => $query, 'limit' => $limit]);
     }
 
     /**
      * Find geolocation by zip code. Returns an array of `Location`
-     * @param array{zip_code:string, country_code:string} $query Array with search data
-     * @param int $limit Response data limit. Default 1.
-     * @return Model\Location[]
+     * @param string $zip_code
+     * @param string $country_code ISO 3166 country code
+     * @return Model\Location
      */
-    public function findLocationByZipCode(array $query)
+    public function findLocationByZipCode(string $zip_code, string $country_code)
     {
-        return $this->getGeoEndpoint('zip')->call(['zip' => implode(',', $query)]);
+        return $this->getGeoEndpoint('zip')->call(['zip' => $zip_code . ',' .$country_code]);
     }
 
     /**
