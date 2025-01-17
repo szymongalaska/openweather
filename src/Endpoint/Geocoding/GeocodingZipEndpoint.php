@@ -13,6 +13,8 @@ use Bejblade\OpenWeather\Model\Location;
 final class GeocodingZipEndpoint extends Endpoint
 {
     /**
+     * @param array{zip:string} $options Parameters to use in call
+     * - `zip` parameter is required and needs to be in this format `zip_code, country_code`
      * @return Location
      */
     public function call(array $options = [])

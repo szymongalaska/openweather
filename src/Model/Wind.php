@@ -10,7 +10,7 @@ class Wind
      * Wind speed in meter/sec or miles/hour
      * @var int
      */
-    public int $speed;
+    public float $speed;
 
     /**
      * Wind direction in meteorogical degrees
@@ -22,12 +22,12 @@ class Wind
      * Wind gust in meter/sec or miles/hour
      * @var int
      */
-    public int $gust;
+    public ?int $gust;
 
     public function __construct(array $data)
     {
         $this->speed = $data['speed'];
         $this->direction = $data['deg'];
-        $this->gust = $data['gust'];
+        $this->gust = $data['gust'] ?? null;
     }
 }

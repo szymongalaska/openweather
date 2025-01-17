@@ -13,6 +13,7 @@ use Bejblade\OpenWeather\Model\Location;
 final class GeocodingReverseEndpoint extends Endpoint
 {
     /**
+     * @param array{lat:int, lon:int, limit:int} $options Parameters to use in call
      * @return Location[]
      */
     public function call(array $options = [])

@@ -51,7 +51,7 @@ final class WeatherEndpoint extends Endpoint
     }
 
     /**
-     * Make a call to API endpoint using Location model
+     * Make a call to API endpoint using Location model also weather as Location parameter
      * @param \Bejblade\OpenWeather\Model\Location $location Location for which weather data will be fetched
      * @param array $options Parameters to use in call
      * - units - Units of measurement. standard, metric and imperial units are available. If you do not use the units parameter, default Endpoint units will be applied by default.
