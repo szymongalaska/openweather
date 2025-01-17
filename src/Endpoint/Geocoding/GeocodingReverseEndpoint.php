@@ -31,7 +31,7 @@ final class GeocodingReverseEndpoint extends Endpoint
 
     protected function buildUrl(): string
     {
-        return 'geo' . '/' . $this->api_version . $this->getEndpoint();
+        return 'geo' . '/' . $this->api_version . '/' . $this->getEndpoint();
     }
 
     protected function getAvailableOptions(): array

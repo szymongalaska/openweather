@@ -16,7 +16,7 @@ class Location
      * Array of location names in different languages
      * @var array
      */
-    public array $localNames;
+    public ?array $localNames;
 
     /**
      * Latitude of location
@@ -45,7 +45,7 @@ class Location
     public function __construct(array $data)
     {
         $this->name = $data['name'];
-        $this->localNames = $data['local_names'];
+        $this->localNames = $data['local_names'] ?? null;
         $this->latitude = $data['lat'];
         $this->longtitude = $data['lon'];
         $this->country = $data['country'];

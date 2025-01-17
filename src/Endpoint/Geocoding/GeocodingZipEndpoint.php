@@ -13,15 +13,13 @@ use Bejblade\OpenWeather\Model\Location;
 final class GeocodingZipEndpoint extends Endpoint
 {
     /**
-     * @return Location[]
+     * @return Location
      */
     public function call(array $options = [])
     {
         $response = $this->getResponse($options);
 
-        return array_map(function ($item) {
-            return new Location($item);
-        }, $response);
+        return new Location($response);
     }
 
     public function getEndpoint(): string
@@ -31,12 +29,12 @@ final class GeocodingZipEndpoint extends Endpoint
 
     protected function buildUrl(): string
     {
-        return 'geo' . '/' . $this->api_version . $this->getEndpoint();
+        return 'geo' . '/' . $this->api_version . '/' . $this->getEndpoint();
     }
 
     protected function getAvailableOptions(): array
     {
-        return ['zip', 'limit'];
+        return ['zip'];
     }
 
     protected function validate(array $options): void

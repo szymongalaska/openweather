@@ -84,9 +84,43 @@ class OpenWeather
         ];
 
         $this->geoEndpoints = [
-            'direct' => new Endpoint\Geocoding\GeocodingDirectEndpoint($this->client),
-            'zip' => new Endpoint\Geocoding\GeocodingZipEndpoint($this->client),
-            'reverse' => new Endpoint\Geocoding\GeocodingReverseEndpoint($this->client)
+            'direct' => new Endpoint\Geocoding\GeocodingDirectEndpoint($this->client, $this->config->get('geo_api_version')),
+            'zip' => new Endpoint\Geocoding\GeocodingZipEndpoint($this->client, $this->config->get('geo_api_version')),
+            'reverse' => new Endpoint\Geocoding\GeocodingReverseEndpoint($this->client, $this->config->get('geo_api_version'))
         ];
+    }
+
+    /**
+     * Find geolocation by location name. Returns an array of `Location`
+     * @param array{city_name:string, state_code:string|null, country_code:string|null} $query Array with search data
+     * @param int $limit Response data limit. Default 1.
+     * @return Model\Location[]
+     */
+    public function findLocationByName(array $query, int $limit = 1)
+    {
+        return $this->getGeoEndpoint('direct')->call(['q' => implode(',', $query), 'limit' => $limit]);
+    }
+
+    /**
+     * Find geolocation by zip code. Returns an array of `Location`
+     * @param array{zip_code:string, country_code:string} $query Array with search data
+     * @param int $limit Response data limit. Default 1.
+     * @return Model\Location[]
+     */
+    public function findLocationByZipCode(array $query)
+    {
+        return $this->getGeoEndpoint('zip')->call(['zip' => implode(',', $query)]);
+    }
+
+    /**
+     * Find geolocation by zip code. Returns an array of `Location`
+     * @param string $lat Latitude
+     * @param string $lon Longitude
+     * @param int $limit Response data limit. Default 1.
+     * @return Model\Location[]
+     */
+    public function findLocationByCoords(string $lat, string $lon, int $limit = 1)
+    {
+        return $this->getGeoEndpoint('reverse')->call(['lat' => $lat, 'lon' => $lon, 'limit' => $limit]);
     }
 }
