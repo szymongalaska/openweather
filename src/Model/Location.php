@@ -42,6 +42,8 @@ class Location
      */
     public ?string $state;
 
+    public ?Weather $weather = null;
+
     public function __construct(array $data)
     {
         $this->name = $data['name'];
@@ -50,6 +52,15 @@ class Location
         $this->longtitude = $data['lon'];
         $this->country = $data['country'];
         $this->state = $data['state'] ?? null;
+    }
+
+    /**
+     * Get coordinates of location
+     * @return string
+     */
+    public function getCoordinates(): string
+    {
+        return $this->latitude . ', ' . $this->longtitude;
     }
 
     /**
@@ -64,11 +75,12 @@ class Location
     }
 
     /**
-     * Get coordinates of location
-     * @return string
+     * Set weather
+     * @param \Bejblade\OpenWeather\Model\Weather $weather
+     * @return \Bejblade\OpenWeather\Model\Weather
      */
-    public function getCoordinates(): string
+    public function setWeather(Weather $weather): Weather
     {
-        return $this->latitude . ', ' . $this->longtitude;
+        return $this->weather = $weather;
     }
 }
