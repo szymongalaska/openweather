@@ -80,13 +80,23 @@ class OpenWeather
     private function registerEndpoints(): void
     {
         $this->endpoints = [
+            'weather' => new Endpoint\WeatherEndpoint($this->client, [
+                'api_version' => $this->config->get('api_version'),
+                'date_format' => $this->config->get('date_format'),
+                'time_format' => $this->config->get('time_format'),
+                'day_format' => $this->config->get('day_format'),
+                'temperature' => $this->config->get('temperature')
+        ]),
+        ];
 
+        $geoConfig = [
+            'api_version' => $this->config->get('geo_api_version')
         ];
 
         $this->geoEndpoints = [
-            'direct' => new Endpoint\Geocoding\GeocodingDirectEndpoint($this->client, $this->config->get('geo_api_version')),
-            'zip' => new Endpoint\Geocoding\GeocodingZipEndpoint($this->client, $this->config->get('geo_api_version')),
-            'reverse' => new Endpoint\Geocoding\GeocodingReverseEndpoint($this->client, $this->config->get('geo_api_version'))
+            'direct' => new Endpoint\Geocoding\GeocodingDirectEndpoint($this->client, $geoConfig),
+            'zip' => new Endpoint\Geocoding\GeocodingZipEndpoint($this->client, $geoConfig),
+            'reverse' => new Endpoint\Geocoding\GeocodingReverseEndpoint($this->client, $geoConfig)
         ];
     }
 
