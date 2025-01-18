@@ -77,7 +77,7 @@ final class Config
         }
 
         if (!in_array($this->config['units'], self::UNITS)) {
-            throw new InvalidConfigurationException("Invalid units: {$this->config['temperature']}");
+            throw new InvalidConfigurationException("Invalid units: {$this->config['units']}");
         }
 
         if (!in_array($this->config['api_version'], self::API_VERSIONS)) {

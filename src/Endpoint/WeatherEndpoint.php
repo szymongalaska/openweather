@@ -97,8 +97,8 @@ class WeatherEndpoint extends Endpoint implements LocationAwareEndpointInterface
             throw new \InvalidArgumentException('Missing date format in configuration');
         }
 
-        if (empty($config['temperature'])) {
-            throw new \InvalidArgumentException('Missing temperature format in configuration');
+        if (empty($config['units'])) {
+            throw new \InvalidArgumentException('Missing units format in configuration');
         }
 
         if (empty($config['timezone'])) {
@@ -107,7 +107,7 @@ class WeatherEndpoint extends Endpoint implements LocationAwareEndpointInterface
 
         $this->date_format = preg_replace('/d|D|j|l|N|S|w|z/', $config['day_format'], $config['date_format'] . ' ' . $config['time_format']);
         $this->timezone = $config['timezone'];
-        $this->units = $config['temperature'];
+        $this->units = $config['units'];
 
     }
 
