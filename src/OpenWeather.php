@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Bejblade\OpenWeather;
 
 use Bejblade\OpenWeather\OpenWeatherClient;
-use Bejblade\OpenWeather\Interface\EndpointInterface;
+use Bejblade\OpenWeather\EndpointRegistry;
 
 class OpenWeather
 {
@@ -21,17 +21,7 @@ class OpenWeather
      */
     protected OpenWeatherClient $client;
 
-    /**
-     * Array of endpoints
-     * @var EndpointInterface[]
-     */
-    private array $endpoints = [];
-
-    /**
-     * Array of Geocoding endpoints
-     * @var EndpointInterface[]
-     */
-    private array $geoEndpoints = [];
+    private EndpointRegistry $endpointRegistry;
 
     /**
      * Constructor method. Set configuration, client and register endpoints
@@ -50,65 +40,23 @@ class OpenWeather
         ];
 
         $this->client = new OpenWeatherClient($clientConfig);
-        $this->registerEndpoints();
-    }
-
-    /**
-     * Get endpoint from $endpoints array
-     * @param string $endpoint Name of endpoint
-     * @return \Bejblade\OpenWeather\Interface\EndpointInterface
-     */
-    protected function getEndpoint(string $endpoint): EndpointInterface
-    {
-        return $this->endpoints[$endpoint];
-    }
-
-    /**
-     * Get Geocoding endpoint from $geoEndpoints array
-     * @param string $endpoint Name of endpoint
-     * @return \Bejblade\OpenWeather\Interface\EndpointInterface
-     */
-    protected function getGeoEndpoint(string $endpoint): EndpointInterface
-    {
-        return $this->geoEndpoints[$endpoint];
+        $this->createEndpointRegistry();
     }
 
     /**
      * Register endpoints in their corresponding arrays
      * @return void
      */
-    protected function registerEndpoints(): void
+    protected function createEndpointRegistry(): void
     {
-        $this->endpoints = [
-            'weather' => new Endpoint\WeatherEndpoint($this->client, [
-                'api_version' => $this->config->get('api_version'),
-                'date_format' => $this->config->get('date_format'),
-                'time_format' => $this->config->get('time_format'),
-                'day_format' => $this->config->get('day_format'),
-                'temperature' => $this->config->get('temperature'),
-                'timezone' => $this->config->get('timezone'),
-        ]),
-        ];
+        $this->endpointRegistry = EndpointRegistry::getInstance();
 
-        $geoConfig = [
-            'api_version' => $this->config->get('geo_api_version')
-        ];
-
-        $this->geoEndpoints = [
-            'direct' => new Endpoint\Geocoding\GeocodingDirectEndpoint($this->client, $geoConfig),
-            'zip' => new Endpoint\Geocoding\GeocodingZipEndpoint($this->client, $geoConfig),
-            'reverse' => new Endpoint\Geocoding\GeocodingReverseEndpoint($this->client, $geoConfig)
-        ];
-    }
-
-    /**
-     * Get Weather by Location object
-     * @param \Bejblade\OpenWeather\Model\Location $location
-     * @return Model\Weather
-     */
-    public function getWeatherByLocation(\Bejblade\OpenWeather\Model\Location $location)
-    {
-        return $location->getCurrentWeather($this->getEndpoint('weather'));
+        $this->endpointRegistry
+            ->registerEndpoint('weather' , new Endpoint\WeatherEndpoint($this->client, $this->config->all()))
+            ->registerEndpoint('forecast', new Endpoint\ForecastEndpoint($this->client, $this->config->all()))
+            ->registerEndpoint('geo.direct', new Endpoint\Geocoding\GeocodingDirectEndpoint($this->client,['api_version' => '1.0']))
+            ->registerEndpoint('geo.zip', new Endpoint\Geocoding\GeocodingZipEndpoint($this->client, ['api_version' => '1.0']))
+            ->registerEndpoint('geo.reverse', new Endpoint\Geocoding\GeocodingReverseEndpoint($this->client, ['api_version' => '1.0']));
     }
 
     /**
@@ -121,8 +69,8 @@ class OpenWeather
      */
     public function findLocationByName(string $city_name, int $limit = 1, ?string $state_code = null, ?string $country_code = null)
     {
-        $query = implode(',', [$city_name, $state_code, $country_code]);
-        return $this->getGeoEndpoint('direct')->call(['q' => $query, 'limit' => $limit]);
+        $query = implode(',', array_filter([$city_name, $state_code, $country_code]));
+        return $this->endpointRegistry->getEndpoint('geo.direct')->call(['q' => $query, 'limit' => $limit]);
     }
 
     /**
@@ -133,7 +81,7 @@ class OpenWeather
      */
     public function findLocationByZipCode(string $zip_code, string $country_code)
     {
-        return $this->getGeoEndpoint('zip')->call(['zip' => $zip_code . ',' .$country_code]);
+        return $this->endpointRegistry->getEndpoint('geo.zip')->call(['zip' => $zip_code . ',' .$country_code]);
     }
 
     /**
@@ -145,6 +93,6 @@ class OpenWeather
      */
     public function findLocationByCoords(string $lat, string $lon, int $limit = 1)
     {
-        return $this->getGeoEndpoint('reverse')->call(['lat' => $lat, 'lon' => $lon, 'limit' => $limit]);
+        return $this->endpointRegistry->getEndpoint('geo.reverse')->call(['lat' => $lat, 'lon' => $lon, 'limit' => $limit]);
     }
 }
