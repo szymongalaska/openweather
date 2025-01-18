@@ -5,6 +5,9 @@ namespace Bejblade\OpenWeather;
 
 use Bejblade\OpenWeather\Interface\EndpointInterface;
 
+/**
+ * Endpoint registry class for accessing endpoints anywhere
+ */
 class EndpointRegistry
 {
     /**
@@ -14,11 +17,9 @@ class EndpointRegistry
     private array $endpoints = [];
 
     /**
-     * Array of Geocoding endpoints
-     * @var EndpointInterface[]
+     * Instance of class
+     * @var 
      */
-    private array $geoEndpoints = [];
-
     private static ?EndpointRegistry $instance = null;
 
     private function __construct()
@@ -33,22 +34,8 @@ class EndpointRegistry
         return self::$instance;
     }
 
-    public function registerEndpoint(string $name, EndpointInterface $endpoint): self
-    {
-        $this->endpoints[$name] = $endpoint;
-
-        return $this;
-    }
-
-    public function registerGeoEndpoint(string $name, EndpointInterface $endpoint): self
-    {
-        $this->geoEndpoints[$name] = $endpoint;
-
-        return $this;
-    }
-
-       /**
-     * Get endpoint from $endpoints array
+    /**
+     * Access endpoint by its name from endpoints registry
      * @param string $endpoint Name of endpoint
      * @return \Bejblade\OpenWeather\Interface\EndpointInterface
      */
@@ -58,12 +45,15 @@ class EndpointRegistry
     }
 
     /**
-     * Get Geocoding endpoint from $geoEndpoints array
-     * @param string $endpoint Name of endpoint
-     * @return \Bejblade\OpenWeather\Interface\EndpointInterface
+     * Register endpoint
+     * @param string $name Name of endpoint, used to access endpoint
+     * @param \Bejblade\OpenWeather\Interface\EndpointInterface $endpoint
+     * @return \Bejblade\OpenWeather\EndpointRegistry
      */
-    public function getGeoEndpoint(string $endpoint): EndpointInterface
+    public function registerEndpoint(string $name, EndpointInterface $endpoint): self
     {
-        return $this->geoEndpoints[$endpoint];
+        $this->endpoints[$name] = $endpoint;
+
+        return $this;
     }
 }
