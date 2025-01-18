@@ -13,10 +13,10 @@ final class Config
     private array $config;
 
     /**
-     * Available temperature units
+     * Available units
      * @var array
      */
-    private const TEMPERATURE_UNITS = ['c', 'f', 'k'];
+    private const UNITS = ['metric', 'imperial', 'standard'];
 
     /**
      * Available API versions
@@ -33,7 +33,7 @@ final class Config
      * - time_format: string - PHP date format for displaying times (default 'h:i A').
      * - day_format: string - PHP date format for displaying days of the week (default, 'l').
      * - timezone: string - PHP supported timezone (default 'UTC')
-     * - temperature: 'c'|'f'|'k' - The unit of temperature: 'c' for Celsius, 'f' for Fahrenheit, 'k' for Kelvin.
+     * - units: metric|imperial|standard - The unit of temperature and measure: 'metric' for Celsius / metric, 'imperial' for Fahrenheit / imperial, 'standard' for Kelvin / metric.
      */
     public function __construct(array $config = [])
     {
@@ -42,7 +42,11 @@ final class Config
         $this->config = array_merge($defaultConfig, $config);
 
         $this->validate();
-        $this->config['temperature'] = $this->setTemperature($this->config['temperature']);
+    }
+
+    public function all(): array
+    {
+        return $this->config;
     }
 
     /**
@@ -61,20 +65,6 @@ final class Config
     }
 
     /**
-     * Convert temperature to valid API format
-     * @param string $temperature
-     * @return string|null
-     */
-    private function setTemperature($temperature): string|null
-    {
-        return match ($temperature) {
-            'c' => 'metric',
-            'f' => 'imperial',
-            'k' => 'standard'
-        };
-    }
-
-    /**
      * Validate configuration array
      * @throws \Bejblade\OpenWeather\Exception\InvalidConfigurationException
      * @return void
@@ -86,8 +76,8 @@ final class Config
             throw new InvalidConfigurationException("API KEY is not set");
         }
 
-        if (!in_array($this->config['temperature'], self::TEMPERATURE_UNITS)) {
-            throw new InvalidConfigurationException("Invalid temparature unit: {$this->config['temperature']}");
+        if (!in_array($this->config['units'], self::UNITS)) {
+            throw new InvalidConfigurationException("Invalid units: {$this->config['temperature']}");
         }
 
         if (!in_array($this->config['api_version'], self::API_VERSIONS)) {

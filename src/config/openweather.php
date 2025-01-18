@@ -8,7 +8,7 @@ return [
     'date_format' => 'd/m/Y',
     'time_format' => 'h:i A',
     'day_format' => 'l',
-    'temperature' => 'c',
+    'units' => 'metric',
     'timezone' => 'UTC',
     'url' => 'https://api.openweathermap.org/',
 ];
