@@ -7,12 +7,19 @@ namespace Bejblade\OpenWeather\Endpoint;
 use Bejblade\OpenWeather\Endpoint\Endpoint;
 use Bejblade\OpenWeather\Interface\LocationAwareEndpointInterface;
 use Bejblade\OpenWeather\Model\Weather;
+use Bejblade\OpenWeather\Model\Forecast;
 
 /**
- * Weather endpoint. Fetch current weather data by Location or latitude and longitude
+ * Forecast endpoint. Fetch 5 day forecast data for any given location wt
  */
-class WeatherEndpoint extends Endpoint implements LocationAwareEndpointInterface
+class ForecastEndpoint extends Endpoint implements LocationAwareEndpointInterface
 {
+    /**
+     * Number of forecasts which will be returned in the API response. Default 40
+     * @var int
+     */
+    protected int $count = 40;
+
     /**
      * Date format used to create Weather
      * @var string
@@ -30,61 +37,69 @@ class WeatherEndpoint extends Endpoint implements LocationAwareEndpointInterface
      * @var string
      */
     protected string $units;
+    
     /**
      * @param array $options Parameters to use in call
      * - lat - Required. Latitude
      * - lon - Required. Longitude
+     * - cnt - Number of forecasts which will be returned in the API response
      * - units - Units of measurement. standard, metric and imperial units are available. If you do not use the units parameter, default Endpoint units will be applied by default.
      * - lang - You can use this parameter to get the output in your language.
      *
-     * @return Weather
+     * @return Forecast
      */
-    public function call(array $options = [])
+    public function call(array $options = []): Forecast
     {
         if (!isset($options['units'])) {
             $options['units'] = $this->units;
         }
 
+        if (!isset($options['cnt'])) {
+            $options['cnt'] = $this->count;
+        }
+
         $response = $this->getResponse($options);
 
-
-        return new Weather($response, $options['units'] ?? $this->units, $this->date_format, $this->timezone);
+        return new Forecast(array_map(fn($weather) => new Weather($weather, $options['units'] ?? $this->units, $this->date_format, $this->timezone), $response));
     }
 
     /**
-     * Make a call to API endpoint using Location model also weather as Location
+     * Make a call to API endpoint using Location model
+     * 
      * @param \Bejblade\OpenWeather\Model\Location $location Location for which weather data will be fetched
      * @param array $options Parameters to use in call
      * - units - Units of measurement. standard, metric and imperial units are available. If you do not use the units parameter, default Endpoint units will be applied by default.
      * - lang - You can use this parameter to get the output in your language.
-     * @return Weather
+     * - cnt - Number of forecasts which will be returned in the API response
+     * 
+     * @return Forecast
      */
-    public function callWithLocation(\Bejblade\OpenWeather\Model\Location $location, array $options = []): Weather
+    public function callWithLocation(\Bejblade\OpenWeather\Model\Location $location, array $options = []): Forecast 
     {
         $options = array_merge(['lat' => $location->getLatitude(), 'lon' => $location->getLongitude()], $options);
         return $this->call($options);
     }
 
-    protected function getAvailableOptions(): array
-    {
-        return ['location', 'lat', 'lon', 'units', 'lang'];
-    }
-
     public function getEndpoint(): string
     {
-        return 'weather';
+        return 'forecast';
     }
-
+    
     protected function buildUrl(): string
     {
         return 'data' . '/' . $this->api_version . '/' . $this->getEndpoint();
+    }
+
+    protected function getAvailableOptions(): array
+    {
+        return ['lat', 'lon', 'units', 'lang', 'cnt'];
     }
 
     protected function validate(array $options): void
     {
         parent::validate($options);
 
-        if ((!isset($options['lat']) && !isset($options['lon'])) && !isset($options['location'])) {
+        if ((!isset($options['lat']) && !isset($options['lon']))) {
             throw new \InvalidArgumentException('Missing Location or latitude and longitute parameter');
         }
     }
@@ -93,22 +108,10 @@ class WeatherEndpoint extends Endpoint implements LocationAwareEndpointInterface
     {
         parent::validateConfiguration($config);
 
-        if (empty($config['date_format']) || empty($config['time_format']) || empty($config['day_format'])) {
-            throw new \InvalidArgumentException('Missing date format in configuration');
+        if (empty($config['units'])) {
+            throw new \InvalidArgumentException('Missing units format in configuration');
         }
 
-        if (empty($config['temperature'])) {
-            throw new \InvalidArgumentException('Missing temperature format in configuration');
-        }
-
-        if (empty($config['timezone'])) {
-            throw new \InvalidArgumentException('Missing timezone in configuration');
-        }
-
-        $this->date_format = preg_replace('/d|D|j|l|N|S|w|z/', $config['day_format'], $config['date_format'] . ' ' . $config['time_format']);
-        $this->timezone = $config['timezone'];
-        $this->units = $config['temperature'];
-
+        $this->units = $config['units'];
     }
-
 }

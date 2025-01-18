@@ -28,11 +28,6 @@ class GeocodingDirectEndpoint extends Endpoint
         }, $response);
     }
 
-    protected function getAvailableOptions(): array
-    {
-        return ['q', 'limit'];
-    }
-
     public function getEndpoint(): string
     {
         return 'direct';
@@ -41,6 +36,11 @@ class GeocodingDirectEndpoint extends Endpoint
     protected function buildUrl(): string
     {
         return 'geo' . '/' . $this->api_version . '/' . $this->getEndpoint();
+    }
+
+    protected function getAvailableOptions(): array
+    {
+        return ['q', 'limit'];
     }
 
     protected function validate(array $options): void

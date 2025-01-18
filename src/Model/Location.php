@@ -4,71 +4,93 @@ declare(strict_types=1);
 
 namespace Bejblade\OpenWeather\Model;
 
-use Bejblade\OpenWeather\Endpoint\WeatherEndpoint;
-
 class Location
 {
     /**
-     * Location name
+     * ISO 3166 Country code
      * @var string
      */
-    public string $name;
-
-    /**
-     * Array of location names in different languages
-     * @var array
-     */
-    public ?array $localNames;
+    private string $country;
 
     /**
      * Latitude of location
      * @var float
      */
-    public float $latitude;
+    private float $latitude;
 
     /**
-     * Longitute of location
+     * Array of location names in different languages
+     * @var array|null
+     */
+    private ?array $localNames;
+
+    /**
+     * Longitude of location
      * @var float
      */
-    public float $longtitude;
+    private float $longitude;
 
     /**
-     * ISO 3166 Country code
+     * Location name
      * @var string
      */
-    public string $country;
+    private string $name;
 
     /**
      * State of location
      * @var string|null
      */
-    public ?string $state;
+    private ?string $state;
 
-    public ?Weather $weather = null;
+    /**
+     * Current weather
+     * @var Weather|null
+     */
+    private ?Weather $weather = null;
 
+    /**
+     * Forecast object
+     * @var Forecast|null
+     */
+    private ?Forecast $forecast = null;
+
+    /**
+     * Constructor to initialize location data
+     *
+     * @param array $data Array containing location information
+     */
     public function __construct(array $data)
     {
         $this->name = $data['name'];
         $this->localNames = $data['local_names'] ?? null;
         $this->latitude = $data['lat'];
-        $this->longtitude = $data['lon'];
+        $this->longitude = $data['lon'];
         $this->country = $data['country'];
         $this->state = $data['state'] ?? null;
     }
 
     /**
-     * Get coordinates of location
+     * Get ISO 3166 country code
      * @return string
      */
-    public function getCoordinates(): string
+    public function getCountry(): string
     {
-        return $this->latitude . ', ' . $this->longtitude;
+        return $this->country;
+    }
+
+    /**
+     * Get location latitude
+     * @return float
+     */
+    public function getLatitude(): float
+    {
+        return $this->latitude;
     }
 
     /**
      * Get location name in specified language
      *
-     * @param string $language
+     * @param string $language Language code
      * @return string|null
      */
     public function getLocalName(string $language): string|null
@@ -77,25 +99,96 @@ class Location
     }
 
     /**
-     * Set weather
-     * @param \Bejblade\OpenWeather\Endpoint\WeatherEndpoint $weatherEndpoint Configured weather endpoint
-     * @return \Bejblade\OpenWeather\Model\Weather|null
+     * Get location longitude
+     * @return float
      */
-    public function getCurrentWeather(WeatherEndpoint $weatherEndpoint): Weather|null
+    public function getLongitude(): float
     {
-        if (!$this->hasWeather() || $this->weather->isUpdateAvailable()) {
-            $this->weather = $weatherEndpoint->callWithLocation($this);
-        }
+        return $this->longitude;
+    }
 
+    /**
+     * Get location name
+     * @return string
+     */
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    /**
+     * Get state of location
+     * @return string|null
+     */
+    public function getState(): ?string
+    {
+        return $this->state;
+    }
+
+    /**
+     * Get coordinates of location as a string
+     * @return string
+     */
+    public function getCoordinates(): string
+    {
+        return $this->latitude . ', ' . $this->longitude;
+    }
+
+    /**
+     * Get forecast object
+     * @return Forecast|null
+     */
+    public function getForecast(): ?Forecast
+    {
+        return $this->forecast;
+    }
+
+    /**
+     * Get weather object
+     * @return Weather|null
+     */
+    public function getWeather(): ?Weather
+    {
         return $this->weather;
     }
 
     /**
-     * Checks if weather
+     * Check if forecast is set
+     * @return bool
+     */
+    public function hasForecast(): bool
+    {
+        return $this->forecast !== null;
+    }
+
+    /**
+     * Check if weather is set
      * @return bool
      */
     public function hasWeather(): bool
     {
         return $this->weather !== null;
+    }
+
+    /**
+     * Set forecast object
+     *
+     * @param Forecast $forecast
+     * @return void
+     */
+    public function setForecast(Forecast $forecast): void
+    {
+        $this->forecast = $forecast;
+    }
+
+    /**
+     * Set weather object
+     *
+     * @param Weather $weather
+     * @return void
+     */
+    public function setWeather(Weather $weather): void
+    {
+        $this->weather = $weather;
     }
 }
