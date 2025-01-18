@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Bejblade\OpenWeather;
@@ -18,7 +19,7 @@ class EndpointRegistry
 
     /**
      * Instance of class
-     * @var 
+     * @var EndpointRegistry|null
      */
     private static ?EndpointRegistry $instance = null;
 
@@ -26,12 +27,13 @@ class EndpointRegistry
     {
     }
 
-    public static function getInstance(): self
+    /**
+     * Get class instance
+     * @return \Bejblade\OpenWeather\EndpointRegistry
+     */
+    public static function getRegistry(): self
     {
-        if (self::$instance === null) {
-            self::$instance = new self();
-        }
-        return self::$instance;
+        return self::$instance ?? self::$instance = new self();
     }
 
     /**
