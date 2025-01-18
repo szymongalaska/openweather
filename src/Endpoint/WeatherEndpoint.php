@@ -5,12 +5,13 @@ declare(strict_types=1);
 namespace Bejblade\OpenWeather\Endpoint;
 
 use Bejblade\OpenWeather\Endpoint\Endpoint;
+use Bejblade\OpenWeather\Interface\LocationAwareEndpointInterface;
 use Bejblade\OpenWeather\Model\Weather;
 
 /**
  * Weather endpoint. Fetch current weather data by Location or latitude and longitude
  */
-class WeatherEndpoint extends Endpoint
+class WeatherEndpoint extends Endpoint implements LocationAwareEndpointInterface
 {
     /**
      * Date format used to create Weather
@@ -29,6 +30,7 @@ class WeatherEndpoint extends Endpoint
      * @var string
      */
     protected string $units;
+
     /**
      * @param array $options Parameters to use in call
      * - lat - Required. Latitude
@@ -38,7 +40,7 @@ class WeatherEndpoint extends Endpoint
      *
      * @return Weather
      */
-    public function call(array $options = [])
+    public function call(array $options = []): Weather
     {
         if (!isset($options['units'])) {
             $options['units'] = $this->units;
@@ -51,22 +53,19 @@ class WeatherEndpoint extends Endpoint
     }
 
     /**
-     * Make a call to API endpoint using Location model also weather as Location
+     * Make a call to API endpoint using Location model
+     * 
      * @param \Bejblade\OpenWeather\Model\Location $location Location for which weather data will be fetched
      * @param array $options Parameters to use in call
      * - units - Units of measurement. standard, metric and imperial units are available. If you do not use the units parameter, default Endpoint units will be applied by default.
      * - lang - You can use this parameter to get the output in your language.
+     * 
      * @return Weather
      */
     public function callWithLocation(\Bejblade\OpenWeather\Model\Location $location, array $options = []): Weather
     {
-        $options = array_merge(['lat' => $location->latitude, 'lon' => $location->longtitude], $options);
+        $options = array_merge(['lat' => $location->getLatitude(), 'lon' => $location->getLongitude()], $options);
         return $this->call($options);
-    }
-
-    protected function getAvailableOptions(): array
-    {
-        return ['location', 'lat', 'lon', 'units', 'lang'];
     }
 
     public function getEndpoint(): string
@@ -79,11 +78,16 @@ class WeatherEndpoint extends Endpoint
         return 'data' . '/' . $this->api_version . '/' . $this->getEndpoint();
     }
 
+    protected function getAvailableOptions(): array
+    {
+        return ['lat', 'lon', 'units', 'lang'];
+    }
+
     protected function validate(array $options): void
     {
         parent::validate($options);
 
-        if ((!isset($options['lat']) && !isset($options['lon'])) && !isset($options['location'])) {
+        if ((!isset($options['lat']) && !isset($options['lon']))) {
             throw new \InvalidArgumentException('Missing Location or latitude and longitute parameter');
         }
     }
@@ -96,8 +100,8 @@ class WeatherEndpoint extends Endpoint
             throw new \InvalidArgumentException('Missing date format in configuration');
         }
 
-        if (empty($config['temperature'])) {
-            throw new \InvalidArgumentException('Missing temperature format in configuration');
+        if (empty($config['units'])) {
+            throw new \InvalidArgumentException('Missing units format in configuration');
         }
 
         if (empty($config['timezone'])) {
@@ -106,8 +110,7 @@ class WeatherEndpoint extends Endpoint
 
         $this->date_format = preg_replace('/d|D|j|l|N|S|w|z/', $config['day_format'], $config['date_format'] . ' ' . $config['time_format']);
         $this->timezone = $config['timezone'];
-        $this->units = $config['temperature'];
-
+        $this->units = $config['units'];
     }
 
 }
