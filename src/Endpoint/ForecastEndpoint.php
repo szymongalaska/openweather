@@ -59,7 +59,7 @@ class ForecastEndpoint extends Endpoint implements LocationAwareEndpointInterfac
         }
 
         $response = $this->getResponse($options);
-        return $this->convertResponseToForecast($response, $options['units']);
+        return $this->convertResponseToForecast($response['list'], $options['units']);
     }
 
     /**
@@ -68,11 +68,11 @@ class ForecastEndpoint extends Endpoint implements LocationAwareEndpointInterfac
      * @param string $units Units of measurement which were used to fetch forecast
      * @return \Bejblade\OpenWeather\Model\Forecast
      */
-    private function convertResponseToForecast(array $response, string $units): Forecast
+    private function convertResponseToForecast(array $weatherList, string $units): Forecast
     {
         $weatherList = array_map(function ($weather) use ($units) {
             return new Weather($weather, $units, $this->date_format, $this->timezone);
-        }, $response);
+        }, $weatherList);
 
         return new Forecast($weatherList);
     }

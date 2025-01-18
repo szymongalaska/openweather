@@ -49,14 +49,40 @@ class OpenWeather
      */
     protected function createEndpointRegistry(): void
     {
-        $this->endpointRegistry = EndpointRegistry::getInstance();
+        $this->endpointRegistry = EndpointRegistry::getRegistry();
 
         $this->endpointRegistry
-            ->registerEndpoint('weather' , new Endpoint\WeatherEndpoint($this->client, $this->config->all()))
+            ->registerEndpoint('weather', new Endpoint\WeatherEndpoint($this->client, $this->config->all()))
             ->registerEndpoint('forecast', new Endpoint\ForecastEndpoint($this->client, $this->config->all()))
-            ->registerEndpoint('geo.direct', new Endpoint\Geocoding\GeocodingDirectEndpoint($this->client,['api_version' => '1.0']))
+            ->registerEndpoint('geo.direct', new Endpoint\Geocoding\GeocodingDirectEndpoint($this->client, ['api_version' => '1.0']))
             ->registerEndpoint('geo.zip', new Endpoint\Geocoding\GeocodingZipEndpoint($this->client, ['api_version' => '1.0']))
             ->registerEndpoint('geo.reverse', new Endpoint\Geocoding\GeocodingReverseEndpoint($this->client, ['api_version' => '1.0']));
+    }
+
+
+    /**
+     * Get Weather by Location object
+     * @param \Bejblade\OpenWeather\Model\Location $location
+     * @return Model\Weather
+     */
+    public function getWeatherByLocation(\Bejblade\OpenWeather\Model\Location $location): Model\Weather|null
+    {
+        if (!$location->hasWeather() || $location->getWeather()->isUpdateAvailable()) {
+            $location->setWeather($this->endpointRegistry->getEndpoint('weather')->callWithLocation($location));
+        }
+
+        return $location->getWeather();
+    }
+
+    /**
+     * Get Forecast by Location object
+     * @param \Bejblade\OpenWeather\Model\Location $location
+     * @return Model\Weather
+     */
+    public function getForecastByLocation(\Bejblade\OpenWeather\Model\Location $location): Model\Forecast|null
+    {
+        $location->setForecast($this->endpointRegistry->getEndpoint('forecast')->callWithLocation($location));
+        return $location->getForecast();
     }
 
     /**
