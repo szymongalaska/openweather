@@ -6,6 +6,7 @@ namespace Bejblade\OpenWeather\Endpoint\Geocoding;
 
 use Bejblade\OpenWeather\Endpoint\Endpoint;
 use Bejblade\OpenWeather\Model\Location;
+use Bejblade\OpenWeather\Config;
 
 /**
  * Direct Geocoding endpoint. Fetch Location data by city name, state code and country code
@@ -14,8 +15,8 @@ class GeocodingDirectEndpoint extends Endpoint
 {
     /**
      * @param array{q:string, limit:int} $options Parameters to use in call
-     *
-     * - `q` parameter is required and needs to be in this format `city_name, state_code, country_code` (state_code only available when country_code is 'US')
+     * - `q` - required and needs to be in this format `city_name, state_code, country_code` (state_code only available when country_code is 'US')
+     * - `limit` - Number of locations to retrieve
      *
      * @return Location[]
      */
@@ -35,7 +36,13 @@ class GeocodingDirectEndpoint extends Endpoint
 
     protected function buildUrl(): string
     {
-        return 'geo' . '/' . $this->api_version . '/' . $this->getEndpoint();
+        return 'geo' . '/' . $this->apiVersion . '/' . $this->getEndpoint();
+    }
+
+    protected function configure(): void
+    {
+        parent::configure();
+        $this->apiVersion = Config::configuration()->get('geo_api_version');
     }
 
     protected function getAvailableOptions(): array

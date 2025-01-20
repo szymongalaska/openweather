@@ -6,6 +6,7 @@ namespace Bejblade\OpenWeather\Endpoint;
 
 use Bejblade\OpenWeather\Interface\EndpointInterface;
 use Bejblade\OpenWeather\OpenWeatherClient;
+use Bejblade\OpenWeather\Config;
 
 /**
  * Endpoint class which calls API endpoint
@@ -16,17 +17,29 @@ abstract class Endpoint implements EndpointInterface
     * API version to use in endpoint request
     * @var string
     */
-    protected string $api_version;
+    protected string $apiVersion;
+
+    /**
+     * Language in which API will be
+     * @var string
+     */
+    protected string $language;
+
+    /**
+     * Units format in which API data will be
+     * @var string
+     */
+    protected string $units;
     /**
      * Client used to call API
      * @var OpenWeatherClient
      */
     protected OpenWeatherClient $client;
 
-    public function __construct(OpenWeatherClient $client, array $config)
+    public function __construct(OpenWeatherClient $client)
     {
         $this->client = $client;
-        $this->validateConfiguration($config);
+        $this->configure();
     }
 
     /**
@@ -66,13 +79,11 @@ abstract class Endpoint implements EndpointInterface
         $this->validateOptionsSupport($options);
     }
 
-    protected function validateConfiguration(array $config): void
+    protected function configure(): void
     {
-        if (empty($config['api_version'])) {
-            throw new \InvalidArgumentException('Missing API Version configuration');
-        }
-
-        $this->api_version = $config['api_version'];
+        $this->apiVersion = Config::configuration()->get('api_version');
+        $this->language = Config::configuration()->get('language');
+        $this->units = Config::configuration()->get('units');
     }
 
     /**
