@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Bejblade\OpenWeather\Model;
 
+use Bejblade\OpenWeather\Config;
+
 class Weather
 {
     /**
@@ -34,19 +36,19 @@ class Weather
      * Human perception of current temperature
      * @var float
      */
-    public float $feels_like;
+    public float $feelsLike;
 
     /**
      * Minimum temperature observed within large megalopolises and urban areas
      * @var float
      */
-    public float $temperature_min;
+    public float $temperatureMin;
 
     /**
      * Maximum temperature observed within large megalopolises and urban areas
      * @var float
      */
-    public float $temperature_max;
+    public float $temperatureMax;
 
     /**
      * Atmospheric pressure on the sea level in hPa
@@ -94,13 +96,13 @@ class Weather
      * Date and time of last data calculation
      * @var \DateTime
      */
-    private \DateTime $last_updated;
+    private \DateTime $lastUpdated;
 
     /**
-     * Date format applied to `$last_updated`
-     * @var string|null
+     * Date format applied to `$lastUpdated`
+     * @var string
      */
-    private string $date_format;
+    private string $dateFormat;
 
     /**
      * Units in which some of parameters are formatted
@@ -112,15 +114,15 @@ class Weather
     public string $units;
 
 
-    public function __construct(array $data, string $units, ?string $date_format = null, ?string $timezone = null)
+    public function __construct(array $data)
     {
         $this->weather = $data['weather'][0]['main'];
         $this->description = $data['weather'][0]['description'];
         $this->icon = $data['weather'][0]['icon'];
         $this->temperature = $data['main']['temp'];
-        $this->feels_like = $data['main']['feels_like'];
-        $this->temperature_min = $data['main']['temp_min'];
-        $this->temperature_max = $data['main']['temp_max'];
+        $this->feelsLike = $data['main']['feels_like'];
+        $this->temperatureMin = $data['main']['temp_min'];
+        $this->temperatureMax = $data['main']['temp_max'];
         $this->pressure = $data['main']['pressure'];
         $this->humidity = $data['main']['humidity'];
         $this->visibility = $data['visibility'];
@@ -128,16 +130,10 @@ class Weather
         $this->clouds = $data['clouds']['all'];
         $this->rain = $data['rain']['1h'] ?? null;
         $this->snow = $data['snow']['1h'] ?? null;
-
-        $this->last_updated = new \DateTime('@' . $data['dt']);
-
-        if ($timezone) {
-            $this->last_updated->setTimezone(new \DateTimeZone($timezone));
-        }
-
-        $this->date_format = $date_format ?? 'd/m/Y H:i';
-
-        $this->units = $units;
+        $this->lastUpdated = new \DateTime('@' . $data['dt']);
+        $this->lastUpdated->setTimezone(new \DateTimeZone(Config::configuration()->get('timezone')));
+        $this->dateFormat = $this->getDateFormat();
+        $this->units = Config::configuration()->get('units');
 
     }
 
@@ -147,7 +143,7 @@ class Weather
      */
     public function getLastUpdateTime(): string
     {
-        return $this->last_updated->format($this->date_format);
+        return $this->lastUpdated->format($this->dateFormat);
     }
 
     /**
@@ -174,13 +170,13 @@ class Weather
      */
     public function isUpdateAvailable(): bool
     {
-        // Calculate difference in minutes
-        $diff = abs((new \DateTime('now', $this->last_updated->getTimezone()))->getTimestamp() - $this->last_updated->getTimestamp()) * 60;
+        $diff = abs((new \DateTime('now', $this->lastUpdated->getTimezone()))->getTimestamp() - $this->lastUpdated->getTimestamp());
 
-        if ($diff >= 10) {
-            return true;
-        }
+        return $diff >= 600; // 10 minutes
+    }
 
-        return false;
+    private function getDateFormat(): string
+    {
+        return $this->dateFormat = preg_replace('/d|D|j|l|N|S|w|z/', Config::configuration()->get('day_format'), Config::configuration()->get('date_format') . ' ' . Config::configuration()->get('time_format'));
     }
 }
