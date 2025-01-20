@@ -44,11 +44,14 @@ class Weather
     /** @var int Cloudiness in % */
     private int $clouds;
 
-    /** @var Precipitation|null Precipitation of rain in mm/h */
-    private ?Precipitation $rain;
+    /** @var float|null Precipitation of rain in mm/h */
+    private ?float $rain;
 
-    /** @var Precipitation|null Precipitation of snow in mm/h */
-    private ?Precipitation $snow;
+    /** @var float|null Precipitation of snow in mm/h */
+    private ?float $snow;
+
+    /** @var float|null Propability of precipitation (only in forecast) */
+    private ?float $propabilityOfPrecipitation = null;
 
     /** @var \DateTime Date and time of last data calculation */
     private \DateTime $lastUpdated;
@@ -73,12 +76,23 @@ class Weather
         $this->visibility = $data['visibility'];
         $this->wind = new Wind($data['wind']);
         $this->clouds = $data['clouds']['all'];
-        $this->rain = isset($data['rain']) ? new Precipitation($data['rain'], $data['pop']) : null;
-        $this->snow = isset($data['snow']) ? new Precipitation($data['snow'], $data['pop']) : null;
+        $this->rain = isset($data['rain']) ? $this->setRain($data['rain']) : null;
+        $this->snow = isset($data['snow']) ? $this->setSnow($data['snow']) : null;
+        $this->propabilityOfPrecipitation = $data['pop'] ?? null;
         $this->lastUpdated = new \DateTime('@' . $data['dt']);
         $this->lastUpdated->setTimezone(new \DateTimeZone(Config::configuration()->get('timezone')));
         $this->dateFormat = $this->getDateFormat();
         $this->units = Config::configuration()->get('units');
+    }
+
+    private function setRain(array $rain): float
+    {
+        return array_key_first($rain) == '1h' ? $rain['1h'] : $rain['3h'] / 3;
+    }
+
+    private function setSnow(array $snow): float
+    {
+        return array_key_first($snow) == '1h' ? $snow['1h'] : $snow['3h'] / 3;
     }
 
     /**
@@ -240,7 +254,7 @@ class Weather
      */
     public function isRaining(): bool
     {
-        return $this->rain ? $this->rain->getPrecipitation() > 0 : false;
+        return $this->rain > 0;
     }
 
     /**
@@ -249,7 +263,7 @@ class Weather
      */
     public function isSnowing(): bool
     {
-        return $this->snow ? $this->snow->getPrecipitation() > 0 : false;
+        return $this->snow > 0;
     }
 
     /**
