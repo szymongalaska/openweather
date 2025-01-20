@@ -25,23 +25,39 @@ final class Config
     private const API_VERSIONS = ['2.5', '3.0'];
 
     /**
+     * Current Config instance
+     * @var ?Config
+     */
+    private static ?Config $instance = null;
+
+    /**
      * Constructor
      * @param array $config Array with configuration parameters
      * - api_key: string - The API key for accessing the OpenWeather API.
      * - language: string - The language code (ISO 639-1) for API responses. Defaults to 'en'.
      * - date_format: string - PHP date format for displaying dates (default 'd/m/Y').
-     * - time_format: string - PHP date format for displaying times (default 'h:i A').
+     * - time_format: string - PHP date format for displaying times (default 'H:i').
      * - day_format: string - PHP date format for displaying days of the week (default, 'l').
      * - timezone: string - PHP supported timezone (default 'UTC')
      * - units: metric|imperial|standard - The unit of temperature and measure: 'metric' for Celsius / metric, 'imperial' for Fahrenheit / imperial, 'standard' for Kelvin / metric.
      */
-    public function __construct(array $config = [])
+    private function __construct(array $config = [])
     {
         $defaultConfig = require __DIR__ . '/config/openweather.php';
 
         $this->config = array_merge($defaultConfig, $config);
 
         $this->validate();
+    }
+
+    /**
+     * Get current Config instance. When run for the first time it will initialize new instance with array config.
+     * @param array $config Configuration array
+     * @return Config
+     */
+    public static function configuration(array $config = [])
+    {
+        return self::$instance ?? self::$instance = new self($config);
     }
 
     public function all(): array

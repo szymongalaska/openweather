@@ -6,7 +6,7 @@ return [
     'geo_api_version' => '1.0',
     'language' => getenv('OPENWEATHER_LANGUAGE') ?: 'en',
     'date_format' => 'd/m/Y',
-    'time_format' => 'h:i A',
+    'time_format' => 'H:i',
     'day_format' => 'l',
     'units' => 'metric',
     'timezone' => 'UTC',
