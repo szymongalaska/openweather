@@ -24,10 +24,10 @@ class Weather
     private float $feelsLike;
 
     /** @var float Minimum temperature observed within large megalopolises and urban areas */
-    private float $temperatureMin;
+    private float $minTemperature;
 
     /** @var float Maximum temperature observed within large megalopolises and urban areas */
-    private float $temperatureMax;
+    private float $maxTemperature;
 
     /** @var int Atmospheric pressure on the sea level in hPa */
     private int $pressure;
@@ -50,8 +50,8 @@ class Weather
     /** @var float|null Precipitation of snow in mm/h */
     private ?float $snow;
 
-    /** @var float|null Propability of precipitation (only in forecast) */
-    private ?float $propabilityOfPrecipitation = null;
+    /** @var float|null Probability of precipitation (only in forecast) */
+    private ?float $probabilityOfPrecipitation = null;
 
     /** @var \DateTime Date and time of last data calculation */
     private \DateTime $lastUpdated;
@@ -69,28 +69,38 @@ class Weather
         $this->icon = $data['weather'][0]['icon'];
         $this->temperature = $data['main']['temp'];
         $this->feelsLike = $data['main']['feels_like'];
-        $this->temperatureMin = $data['main']['temp_min'];
-        $this->temperatureMax = $data['main']['temp_max'];
+        $this->minTemperature = $data['main']['temp_min'];
+        $this->maxTemperature = $data['main']['temp_max'];
         $this->pressure = $data['main']['pressure'];
         $this->humidity = $data['main']['humidity'];
         $this->visibility = $data['visibility'];
         $this->wind = new Wind($data['wind']);
         $this->clouds = $data['clouds']['all'];
-        $this->rain = isset($data['rain']) ? $this->setRain($data['rain']) : null;
-        $this->snow = isset($data['snow']) ? $this->setSnow($data['snow']) : null;
-        $this->propabilityOfPrecipitation = $data['pop'] ?? null;
+        $this->rain = isset($data['rain']) ? $this->determineRain($data['rain']) : null;
+        $this->snow = isset($data['snow']) ? $this->determineSnow($data['snow']) : null;
+        $this->probabilityOfPrecipitation = $data['pop'] ?? null;
         $this->lastUpdated = new \DateTime('@' . $data['dt']);
         $this->lastUpdated->setTimezone(new \DateTimeZone(Config::configuration()->get('timezone')));
         $this->dateFormat = $this->getDateFormat();
         $this->units = Config::configuration()->get('units');
     }
 
-    private function setRain(array $rain): float
+    /**
+     * Get rain value to set
+     * @param array $rain
+     * @return float
+     */
+    private function determineRain(array $rain): float
     {
         return array_key_first($rain) == '1h' ? $rain['1h'] : $rain['3h'] / 3;
     }
 
-    private function setSnow(array $snow): float
+    /**
+     * Get snow value to set
+     * @param array $snow
+     * @return float
+     */
+    private function determineSnow(array $snow): float
     {
         return array_key_first($snow) == '1h' ? $snow['1h'] : $snow['3h'] / 3;
     }
@@ -144,18 +154,18 @@ class Weather
      * Get minimum temperature
      * @return float
      */
-    public function getTemperatureMin(): float
+    public function getMinTemperature(): float
     {
-        return $this->temperatureMin;
+        return $this->minTemperature;
     }
 
     /**
      * Get maximum temperature
      * @return float
      */
-    public function getTemperatureMax(): float
+    public function getMaxTemperature(): float
     {
-        return $this->temperatureMax;
+        return $this->maxTemperature;
     }
 
     /**
@@ -219,6 +229,15 @@ class Weather
     public function getSnow(): ?float
     {
         return $this->snow;
+    }
+
+    /**
+     * Get probability of precipitation
+     * @return float|null
+     */
+    public function getProbabilityOfPrecipitation(): ?float
+    {
+        return $this->probabilityOfPrecipitation;
     }
 
     /**
