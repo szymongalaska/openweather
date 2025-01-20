@@ -8,111 +8,56 @@ use Bejblade\OpenWeather\Config;
 
 class Weather
 {
-    /**
-     * Weather name
-     * @var string
-     */
-    public string $weather;
+    /** @var string Weather name */
+    private string $weather;
 
-    /**
-     * Weather description
-     * @var string
-     */
-    public string $description;
+    /** @var string Weather description */
+    private string $description;
 
-    /**
-     * Weather icon id
-     * @var string
-     */
-    public string $icon;
+    /** @var string Weather icon id */
+    private string $icon;
 
-    /**
-     * Current temperature
-     * @var float
-     */
-    public float $temperature;
+    /** @var float Current temperature */
+    private float $temperature;
 
-    /**
-     * Human perception of current temperature
-     * @var float
-     */
-    public float $feelsLike;
+    /** @var float Human perception of current temperature */
+    private float $feelsLike;
 
-    /**
-     * Minimum temperature observed within large megalopolises and urban areas
-     * @var float
-     */
-    public float $temperatureMin;
+    /** @var float Minimum temperature observed within large megalopolises and urban areas */
+    private float $temperatureMin;
 
-    /**
-     * Maximum temperature observed within large megalopolises and urban areas
-     * @var float
-     */
-    public float $temperatureMax;
+    /** @var float Maximum temperature observed within large megalopolises and urban areas */
+    private float $temperatureMax;
 
-    /**
-     * Atmospheric pressure on the sea level in hPa
-     * @var int
-     */
-    public int $pressure;
+    /** @var int Atmospheric pressure on the sea level in hPa */
+    private int $pressure;
 
-    /**
-     * Humidity in %
-     * @var int
-     */
-    public int $humidity;
+    /** @var int Humidity in % */
+    private int $humidity;
 
-    /**
-     * Visibility in meters, maximum is 10km
-     * @var int
-     */
-    public int $visibility;
+    /** @var int Visibility in meters, maximum is 10km */
+    private int $visibility;
 
-    /**
-     * Wind data of current weather
-     * @var Wind
-     */
-    public Wind $wind;
+    /** @var Wind Wind data of current weather */
+    private Wind $wind;
 
-    /**
-     * Cloudiness in %
-     * @var int
-     */
-    public int $clouds;
+    /** @var int Cloudiness in % */
+    private int $clouds;
 
-    /**
-     * Precipitation of rain in mm/h
-     * @var int|null
-     */
-    public ?float $rain;
+    /** @var Precipitation|null Precipitation of rain in mm/h */
+    private ?Precipitation $rain;
 
-    /**
-     * Precipitation of snow in mm/h
-     * @var float|null
-     */
-    public ?float $snow;
+    /** @var Precipitation|null Precipitation of snow in mm/h */
+    private ?Precipitation $snow;
 
-    /**
-     * Date and time of last data calculation
-     * @var \DateTime
-     */
+    /** @var \DateTime Date and time of last data calculation */
     private \DateTime $lastUpdated;
 
-    /**
-     * Date format applied to `$lastUpdated`
-     * @var string
-     */
+    /** @var string Date format applied to `$lastUpdated` */
     private string $dateFormat;
 
-    /**
-     * Units in which some of parameters are formatted
-     * - standard - Kelvin | meter/sec
-     * - metric - Celsius | meter/sec
-     * - imperial - Fahrenheit | miles/hour
-     * @var string
-     */
-    public string $units;
-
+    /** @var string Units in which some of parameters are formatted */
+    private string $units;
 
     public function __construct(array $data)
     {
@@ -128,13 +73,147 @@ class Weather
         $this->visibility = $data['visibility'];
         $this->wind = new Wind($data['wind']);
         $this->clouds = $data['clouds']['all'];
-        $this->rain = $data['rain']['1h'] ?? null;
-        $this->snow = $data['snow']['1h'] ?? null;
+        $this->rain = isset($data['rain']) ? new Precipitation($data['rain'], $data['pop']) : null;
+        $this->snow = isset($data['snow']) ? new Precipitation($data['snow'], $data['pop']) : null;
         $this->lastUpdated = new \DateTime('@' . $data['dt']);
         $this->lastUpdated->setTimezone(new \DateTimeZone(Config::configuration()->get('timezone')));
         $this->dateFormat = $this->getDateFormat();
         $this->units = Config::configuration()->get('units');
+    }
 
+    /**
+     * Get weather name
+     * @return string
+     */
+    public function getWeather(): string
+    {
+        return $this->weather;
+    }
+
+    /**
+     * Get weather description
+     * @return string
+     */
+    public function getDescription(): string
+    {
+        return $this->description;
+    }
+
+    /**
+     * Get weather icon id
+     * @return string
+     */
+    public function getIcon(): string
+    {
+        return $this->icon;
+    }
+
+    /**
+     * Get current temperature
+     * @return float
+     */
+    public function getTemperature(): float
+    {
+        return $this->temperature;
+    }
+
+    /**
+     * Get feels like temperature
+     * @return float
+     */
+    public function getFeelsLike(): float
+    {
+        return $this->feelsLike;
+    }
+
+    /**
+     * Get minimum temperature
+     * @return float
+     */
+    public function getTemperatureMin(): float
+    {
+        return $this->temperatureMin;
+    }
+
+    /**
+     * Get maximum temperature
+     * @return float
+     */
+    public function getTemperatureMax(): float
+    {
+        return $this->temperatureMax;
+    }
+
+    /**
+     * Get atmospheric pressure
+     * @return int
+     */
+    public function getPressure(): int
+    {
+        return $this->pressure;
+    }
+
+    /**
+     * Get humidity
+     * @return int
+     */
+    public function getHumidity(): int
+    {
+        return $this->humidity;
+    }
+
+    /**
+     * Get visibility
+     * @return int
+     */
+    public function getVisibility(): int
+    {
+        return $this->visibility;
+    }
+
+    /**
+     * Get wind data
+     * @return Wind
+     */
+    public function getWind(): Wind
+    {
+        return $this->wind;
+    }
+
+    /**
+     * Get cloudiness
+     * @return int
+     */
+    public function getClouds(): int
+    {
+        return $this->clouds;
+    }
+
+    /**
+     * Get rain precipitation
+     * @return float|null
+     */
+    public function getRain(): ?float
+    {
+        return $this->rain;
+    }
+
+    /**
+     * Get snow precipitation
+     * @return float|null
+     */
+    public function getSnow(): ?float
+    {
+        return $this->snow;
+    }
+
+    /**
+     * Get last update time
+     * @return \DateTime
+     */
+    public function getLastUpdated(): \DateTime
+    {
+        return $this->lastUpdated;
     }
 
     /**
@@ -147,12 +226,21 @@ class Weather
     }
 
     /**
+     * Get units
+     * @return string
+     */
+    public function getUnits(): string
+    {
+        return $this->units;
+    }
+
+    /**
      * Check if there is any rain
      * @return bool
      */
     public function isRaining(): bool
     {
-        return $this->rain > 0;
+        return $this->rain ? $this->rain->getPrecipitation() > 0 : false;
     }
 
     /**
@@ -161,7 +249,7 @@ class Weather
      */
     public function isSnowing(): bool
     {
-        return $this->snow > 0;
+        return $this->snow ? $this->snow->getPrecipitation() > 0 : false;
     }
 
     /**
@@ -175,8 +263,26 @@ class Weather
         return $diff >= 600; // 10 minutes
     }
 
+    /**
+     * Set dateFormat according to configuration
+     * @return string
+     */
     private function getDateFormat(): string
     {
-        return $this->dateFormat = preg_replace('/d|D|j|l|N|S|w|z/', Config::configuration()->get('day_format'), Config::configuration()->get('date_format') . ' ' . Config::configuration()->get('time_format'));
+        return $this->dateFormat = preg_replace(
+            '/d|D|j|l|N|S|w|z/',
+            Config::configuration()->get('day_format'),
+            Config::configuration()->get('date_format') . ' ' . Config::configuration()->get('time_format')
+        );
+    }
+
+    /**
+     * Helper method that checks if weather last update date is same as given date
+     * @param \DateTimeInterface $date Date to compare
+     * @return bool
+     */
+    public function isSameDay(\DateTimeInterface $date): bool
+    {
+        return $date->format('Y-m-d') == $this->lastUpdated->format('Y-m-d');
     }
 }
