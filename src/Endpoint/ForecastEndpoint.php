@@ -75,11 +75,6 @@ class ForecastEndpoint extends Endpoint implements LocationAwareEndpointInterfac
         return 'forecast';
     }
 
-    protected function buildUrl(): string
-    {
-        return 'data' . '/' . $this->apiVersion . '/' . $this->getEndpoint();
-    }
-
     protected function getAvailableOptions(): array
     {
         return ['lat', 'lon', 'cnt'];
@@ -90,7 +85,7 @@ class ForecastEndpoint extends Endpoint implements LocationAwareEndpointInterfac
         parent::validate($options);
 
         if ((!isset($options['lat']) || !isset($options['lon']))) {
-            throw new \InvalidArgumentException('Missing latitude and/or longitute parameter');
+            throw new \InvalidArgumentException('Missing latitude and/or longitude parameter');
         }
     }
 }

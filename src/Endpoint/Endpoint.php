@@ -61,7 +61,10 @@ abstract class Endpoint implements EndpointInterface
      * Build URL which will be used to make API request
      * @return string
      */
-    abstract protected function buildUrl(): string;
+    protected function buildUrl(): string
+    {
+        return 'data' . '/' . $this->apiVersion . '/' . $this->getEndpoint();
+    }
 
     /**
      * Returns array of available options to use in request

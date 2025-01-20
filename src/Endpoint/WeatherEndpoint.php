@@ -49,17 +49,12 @@ class WeatherEndpoint extends Endpoint implements LocationAwareEndpointInterface
         return 'weather';
     }
 
-    protected function buildUrl(): string
-    {
-        return 'data' . '/' . $this->apiVersion . '/' . $this->getEndpoint();
-    }
-
     protected function validate(array $options): void
     {
         parent::validate($options);
 
         if ((!isset($options['lat']) || !isset($options['lon']))) {
-            throw new \InvalidArgumentException('Missing latitude and/or longitute parameter');
+            throw new \InvalidArgumentException('Missing latitude and/or longitude parameter');
         }
     }
 }
