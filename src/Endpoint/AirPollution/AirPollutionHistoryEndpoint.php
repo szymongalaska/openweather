@@ -1,0 +1,82 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Bejblade\OpenWeather\Endpoint\AirPollution;
+
+use Bejblade\OpenWeather\Endpoint\Endpoint;
+use Bejblade\OpenWeather\Interface\LocationAwareEndpointInterface;
+use Bejblade\OpenWeather\Model\AirPollution;
+
+/**
+ * Air pollution history endpoint. Get historical air pollution data for any coordinates on the globe (accessible from 27th November 2020).
+ */
+class AirPollutionHistoryEndpoint extends Endpoint implements LocationAwareEndpointInterface
+{
+    /**
+     * @param array{lat:string, lon:int, start:string, end:string} $options Parameters to use in call
+     * - `lat` - Latitude
+     * - `lon` - Longitude
+     * - `start` - Start date (unix time, UTC time zone)
+     * - `end` - End date (unix time, UTC time zone)
+     *
+     * @return AirPollution[]
+     */
+    public function call(array $options = []): array
+    {
+        $response = $this->getResponse($options);
+
+        return $this->convertResponseToAirPollutionArray($response['list']);
+    }
+
+    /**
+     * Convert Air Pollution Forecast response to AirPollution list
+     * @param array $response Array of air pollution data
+     * @return \Bejblade\OpenWeather\Model\AirPollution[]
+     */
+    private function convertResponseToAirPollutionArray(array $airPollutionList): array
+    {
+        $airPollutionList = array_map(function ($airPollution) {
+            return new AirPollution($airPollution);
+        }, $airPollutionList);
+
+        return $airPollutionList;
+    }
+
+    /**
+     * @param array $options Parameters to use in call
+     * - `start` - Start date (unix time, UTC time zone)
+     * - `end` - End date (unix time, UTC time zone)
+     *
+     * @return AirPollution[]
+     */
+    public function callWithLocation(\Bejblade\OpenWeather\Model\Location $location, array $options = []): array
+    {
+        $options = array_merge(['lat' => $location->getLatitude(), 'lon' => $location->getLongitude()], $options);
+        return $this->call($options);
+    }
+
+    public function getEndpoint(): string
+    {
+        return 'air_pollution/history';
+    }
+
+    protected function getAvailableOptions(): array
+    {
+        return ['lat', 'lon', 'start', 'date'];
+    }
+
+    protected function validate(array $options): void
+    {
+        parent::validate($options);
+
+        if ((!isset($options['lat']) || !isset($options['lon']))) {
+            throw new \InvalidArgumentException('Missing latitude and/or longitude parameter');
+        }
+
+        if (!isset($options['start']) || !isset($options['end'])) {
+            throw new \InvalidArgumentException('Missing date range');
+        }
+    }
+
+}
