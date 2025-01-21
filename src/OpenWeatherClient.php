@@ -2,6 +2,7 @@
 
 namespace Bejblade\OpenWeather;
 
+use Bejblade\OpenWeather\Exception\OpenWeatherClientException;
 use GuzzleHttp\Client;
 use Psr\Http\Message\ResponseInterface;
 
@@ -11,11 +12,13 @@ class OpenWeatherClient extends Client
      * Array with default query options
      * @var array
      */
-    private array $defaultOptions;
+    private array $defaultOptions = [];
 
     public function __construct(array $config = [])
     {
-        $this->defaultOptions = ['query' => $config['query']];
+        if ($config['query']) {
+            $this->defaultOptions = ['query' => $config['query']];
+        }
 
         unset($config['query']);
         parent::__construct($config);
@@ -25,14 +28,19 @@ class OpenWeatherClient extends Client
      * Send request to API and parse its response
      * @param string $url Request url
      * @param array $options Request options to apply
+     * @throws OpenWeatherClientException
      * @return array
      */
     public function callApi(string $url, array $options = []): array
     {
         $options = array_merge_recursive($options, $this->defaultOptions);
 
-        $response = $this->get($url, $options);
-        return $this->parseResponse($response);
+        try {
+            $response = $this->get($url, $options);
+            return $this->parseResponse($response);
+        } catch (\GuzzleHttp\Exception\ClientException $e) {
+            throw new OpenWeatherClientException($e->getMessage(), $e->getRequest(), $e->getResponse());
+        }
     }
 
     /**
