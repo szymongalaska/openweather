@@ -99,7 +99,7 @@ abstract class Endpoint implements EndpointInterface
     {
         $invalidOptions = array_diff(array_keys($options), $this->getAvailableOptions());
         if (!empty($invalidOptions)) {
-            throw new \InvalidArgumentException('Options not supported.');
+            throw new \InvalidArgumentException('Options not supported: '.implode($invalidOptions));
         }
 
         return true;
