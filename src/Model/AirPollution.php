@@ -79,12 +79,22 @@ class AirPollution
     }
 
     /**
-     * Get Air Quality Index description
+     * Get description of current Air Quality Index
      * @return string
      */
     public function getAirQualityIndexDescription(): string
     {
-        return match ($this->aqi) {
+        return $this->getAirQualityDescription($this->aqi);
+    }
+
+    /**
+     * Get description for given air pollutant or air quality index
+     * @param int $quality Quality of air pollutant or air quality index
+     * @return string
+     */
+    private function getAirQualityDescription(int $quality): string
+    {
+        return match ($quality) {
             1 => 'Good',
             2 => 'Fair',
             3 => 'Moderate',
@@ -100,6 +110,108 @@ class AirPollution
     public function getCarbonMonoxide(): float
     {
         return $this->co;
+    }
+
+    /**
+     * Get description for carbon monoxide concentraction
+     * @return string
+     */
+    public function getCarbonMonoxideDescription(): string
+    {
+        $quality = match (true) {
+            $this->co >= 0 && $this->co < 4400 => 1,
+            $this->co >= 4400 && $this->co < 9400 => 2,
+            $this->co >= 9400 && $this->co < 12400 => 3,
+            $this->co >= 12400 && $this->co < 15400 => 4,
+            $this->co >= 15400 => 5,
+        };
+
+        return $this->getAirQualityDescription($quality);
+    }
+
+    /**
+     * Get description for nitrogen dioxide concentraction
+     * @return string
+     */
+    public function getNitrogenDioxideDescription(): string
+    {
+        $quality = match (true) {
+            $this->no2 >= 0 && $this->no2 < 40 => 1,
+            $this->no2 >= 40 && $this->no2 < 70 => 2,
+            $this->no2 >= 70 && $this->no2 < 150 => 3,
+            $this->no2 >= 150 && $this->no2 < 200 => 4,
+            $this->no2 >= 200 => 5,
+        };
+
+        return $this->getAirQualityDescription($quality);
+    }
+
+    /**
+     * Get description for ozone concentraction
+     * @return string
+     */
+    public function getOzoneDescription(): string
+    {
+        $quality = match (true) {
+            $this->o3 >= 0 && $this->o3 < 60 => 1,
+            $this->o3 >= 60 && $this->o3 < 100 => 2,
+            $this->o3 >= 100 && $this->o3 < 140 => 3,
+            $this->o3 >= 140 && $this->o3 < 180 => 4,
+            $this->o3 >= 180 => 5,
+        };
+
+        return $this->getAirQualityDescription($quality);
+    }
+
+    /**
+     * Get description for sulphur dioxide concentraction
+     * @return string
+     */
+    public function getSulphurDioxideDescription(): string
+    {
+        $quality = match (true) {
+            $this->so2 >= 0 && $this->so2 < 20 => 1,
+            $this->so2 >= 20 && $this->so2 < 80 => 2,
+            $this->so2 >= 80 && $this->so2 < 250 => 3,
+            $this->so2 >= 250 && $this->so2 < 350 => 4,
+            $this->so2 >= 350 => 5,
+        };
+
+        return $this->getAirQualityDescription($quality);
+    }
+
+    /**
+     * Get description for fine particles concentraction
+     * @return string
+     */
+    public function getFineParticlesMatterDescription(): string
+    {
+        $quality = match (true) {
+            $this->pm2_5 >= 0 && $this->pm2_5 < 10 => 1,
+            $this->pm2_5 >= 10 && $this->pm2_5 < 25 => 2,
+            $this->pm2_5 >= 25 && $this->pm2_5 < 50 => 3,
+            $this->pm2_5 >= 50 && $this->pm2_5 < 75 => 4,
+            $this->pm2_5 >= 75 => 5,
+        };
+
+        return $this->getAirQualityDescription($quality);
+    }
+
+    /**
+     * Get description for coarse particles concentraction
+     * @return string
+     */
+    public function getCoarseParticulateMatterDescription(): string
+    {
+        $quality = match (true) {
+            $this->pm10 >= 0 && $this->pm10 < 20 => 1,
+            $this->pm10 >= 20 && $this->pm10 < 50 => 2,
+            $this->pm10 >= 50 && $this->pm10 < 100 => 3,
+            $this->pm10 >= 100 && $this->pm10 < 200 => 4,
+            $this->pm10 >= 200 => 5,
+        };
+
+        return $this->getAirQualityDescription($quality);
     }
 
     /**

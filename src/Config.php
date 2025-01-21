@@ -60,6 +60,10 @@ final class Config
         return self::$instance ?? self::$instance = new self($config);
     }
 
+    /**
+     * Get configuration
+     * @return array
+     */
     public function all(): array
     {
         return $this->config;
