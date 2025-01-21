@@ -6,8 +6,7 @@ namespace Bejblade\OpenWeather\Endpoint;
 
 use Bejblade\OpenWeather\Endpoint\Endpoint;
 use Bejblade\OpenWeather\Interface\LocationAwareEndpointInterface;
-use Bejblade\OpenWeather\Model\Weather;
-use Bejblade\OpenWeather\Model\Forecast;
+use Bejblade\OpenWeather\Model\Collection\WeatherCollection;
 
 /**
  * Forecast endpoint. Fetch 5 day forecast data for any given location wt
@@ -26,9 +25,9 @@ class ForecastEndpoint extends Endpoint implements LocationAwareEndpointInterfac
      * - `lon` - Required. Longitude
      * - `cnt` - Number of forecasts which will be returned in the API response. Default 40 (5 days)
      *
-     * @return Forecast
+     * @return WeatherCollection
      */
-    public function call(array $options = []): Forecast
+    public function call(array $options = []): WeatherCollection
     {
         $options['units'] = $this->units;
 
@@ -37,22 +36,17 @@ class ForecastEndpoint extends Endpoint implements LocationAwareEndpointInterfac
         }
 
         $response = $this->getResponse($options);
-        return $this->convertResponseToForecast($response['list'], $options['units']);
+        return $this->convertResponseToWeatherCollection($response['list']);
     }
 
     /**
      * Convert forecast response to Weather list and return Forecast
      * @param array $response Array of forecasts
-     * @param string $units Units of measurement which were used to fetch forecast
-     * @return \Bejblade\OpenWeather\Model\Forecast
+     * @return WeatherCollection
      */
-    private function convertResponseToForecast(array $weatherList, string $units): Forecast
+    private function convertResponseToWeatherCollection(array $weatherList): WeatherCollection
     {
-        $weatherList = array_map(function ($weather) use ($units) {
-            return new Weather($weather);
-        }, $weatherList);
-
-        return new Forecast($weatherList);
+        return new WeatherCollection($weatherList);
     }
 
     /**
@@ -62,9 +56,9 @@ class ForecastEndpoint extends Endpoint implements LocationAwareEndpointInterfac
      * @param array $options Parameters to use in call
      * - cnt - Number of forecasts which will be returned in the API response
      *
-     * @return Forecast
+     * @return WeatherCollection
      */
-    public function callWithLocation(\Bejblade\OpenWeather\Model\Location $location, array $options = []): Forecast
+    public function callWithLocation(\Bejblade\OpenWeather\Model\Location $location, array $options = []): WeatherCollection
     {
         $options = array_merge(['lat' => $location->getLatitude(), 'lon' => $location->getLongitude()], $options);
         return $this->call($options);

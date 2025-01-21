@@ -2,68 +2,90 @@
 
 declare(strict_types=1);
 
-namespace Bejblade\OpenWeather\Model;
+namespace Bejblade\OpenWeather\Model\Collection;
 
-class Forecast
+use Bejblade\OpenWeather\OpenWeatherDate;
+use Bejblade\OpenWeather\Model\Weather;
+
+class WeatherCollection implements \Countable
 {
     /**
-     * Weather list
+     * Collection of weather
      * @var Weather[]
      */
-    private array $forecasts;
+    private array $collection = [];
 
-    /**
-     * @param Weather[] $forecasts
-     */
-    public function __construct($forecasts)
+    public function __construct(array $list)
     {
-        $this->forecasts = $forecasts;
+        $this->collection = $this->createCollection($list);
     }
 
     /**
-     * Get all forecasts
+     * Get collection
      * @return array
      */
     public function all(): array
     {
-        return $this->forecasts;
+        return $this->collection;
+    }
+
+    public function count(): int
+    {
+        return count($this->collection);
     }
 
     /**
-     * Get the forecast for the rest of the day
-     * @return array
+     * Initialize collection as array of Weather[]
+     * @param array $list
+     * @return Weather[]
      */
-    public function getForecastForToday(): Forecast|bool
+    private function createCollection(array $list): array
     {
-        return $this->getForecastForDay();
+        return array_map(function ($row) {
+            if (!$row instanceof Weather) {
+                return new Weather($row);
+            }
+
+            return $row;
+        }, $list);
+    }
+
+
+    /**
+     * Get the forecast for the rest of the day
+     * @return WeatherCollection|bool
+     */
+    public function getForecastForToday(): WeatherCollection|bool
+    {
+        return $this->getWeatherForDay();
     }
 
     /**
      * Get the forecast for tomorrow
-     * @return array
+     * @return WeatherCollection|bool
      */
-    public function getForecastForTomorrow(): Forecast|bool
+    public function getForecastForTomorrow(): WeatherCollection|bool
     {
-        return $this->getForecastForDay(1);
+        return $this->getWeatherForDay(1);
     }
 
     /**
      * Get forecast for a specific day. Returns false if there is no forcast for that day or current forecast is the same. The furthest day you can check is 5
      * @param int $day
-     * @return array
+     * @return WeatherCollection|bool
      */
-    public function getForecastForNext(int $day): Forecast|bool
+    public function getWeatherForNext(int $day): WeatherCollection|bool
     {
-        return $this->getForecastForDay($day);
+        return $this->getWeatherForDay($day);
     }
 
     /**
      * Get forecast for a specific day. Returns false if there is no forcast for that day or current forecast is the same. The furthest day you can check is 5
      * @param int $day
      * @throws \InvalidArgumentException
-     * @return Forecast|bool
+     * @return WeatherCollection|bool
      */
-    private function getForecastForDay(int $day = 0): Forecast|bool
+    private function getWeatherForDay(int $day = 0): WeatherCollection|bool
     {
         if ($day == 0) {
             $date = new \DateTime();
@@ -75,14 +97,14 @@ class Forecast
 
         $forecasts = [];
 
-        foreach ($this->forecasts as $weather) {
+        foreach ($this->collection as $weather) {
             if ($weather->getLastUpdated()->isSameDay($date)) {
                 $forecasts[] = $weather;
             }
         }
 
-        if (!empty($forecasts) && $forecasts !== $this->forecasts) {
-            return new Forecast($forecasts);
+        if (!empty($forecasts) && $forecasts !== $this->collection) {
+            return new self($forecasts);
         } else {
             return false;
         }
@@ -109,9 +131,19 @@ class Forecast
             throw new \InvalidArgumentException('Average value for that property is not available or property does not exist.');
         }
 
+        $property = match($property){
+            'temperature' => 'current',
+            'maxTemperature' => 'max',
+            'minTemperature' => 'min',
+            default => $property
+        };
+
         $method = 'get' . ucfirst($property);
-        foreach ($this->forecasts as $weather) {
-            $values[] = $weather->$method();
+        foreach ($this->collection as $weather) {
+            if(in_array($property, ['current', 'max', 'min', 'feelsLike']))
+                $values[] = $weather->temperature()->$method();
+            else
+                $values[] = $weather->$method();
         }
 
         $averageValue = array_sum($values) / count($values);
@@ -135,7 +167,6 @@ class Forecast
     {
         return $this->getAverage('maxTemperature');
     }
-
 
     /**
      * Get average min temperature for current forecast
@@ -198,7 +229,7 @@ class Forecast
      */
     public function willItRain(): bool
     {
-        foreach ($this->forecasts as $weather) {
+        foreach ($this->collection as $weather) {
             $rain[] = $weather->getRain() ? $weather->getProbabilityOfPrecipitation() >= 0.5 : false;
         }
 
@@ -213,7 +244,7 @@ class Forecast
      */
     public function willItSnow(): bool
     {
-        foreach ($this->forecasts as $weather) {
+        foreach ($this->collection as $weather) {
             $rain[] = $weather->getSnow() ? $weather->getProbabilityOfPrecipitation() >= 0.5 : false;
         }
 
