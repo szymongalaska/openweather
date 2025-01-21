@@ -55,6 +55,12 @@ class Location
     private ?Forecast $forecast = null;
 
     /**
+     * AirPollution object
+     * @var AirPollution|null
+     */
+    private ?AirPollution $airPollution = null;
+
+    /**
      * Constructor to initialize location data
      *
      * @param array $data Array containing location information
@@ -153,6 +159,15 @@ class Location
     }
 
     /**
+     * Get air pollution object
+     * @return AirPollution|null
+     */
+    public function getAirPollution(): ?AirPollution
+    {
+        return $this->airPollution;
+    }
+
+    /**
      * Check if forecast is set
      * @return bool
      */
@@ -168,6 +183,15 @@ class Location
     public function hasWeather(): bool
     {
         return $this->weather !== null;
+    }
+
+    /**
+     * Check if air pollution is set
+     * @return bool
+     */
+    public function hasAirPollution(): bool
+    {
+        return $this->airPollution !== null;
     }
 
     /**
@@ -190,5 +214,16 @@ class Location
     public function setWeather(Weather $weather): void
     {
         $this->weather = $weather;
+    }
+
+    /**
+     * Set air pollution object
+     *
+     * @param AirPollution $airPollution
+     * @return void
+     */
+    public function setAirPollution(AirPollution $airPollution): void
+    {
+        $this->airPollution = $airPollution;
     }
 }
