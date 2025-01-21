@@ -76,7 +76,7 @@ class Forecast
         $forecasts = [];
 
         foreach ($this->forecasts as $weather) {
-            if ($weather->isSameDay($date)) {
+            if ($weather->getLastUpdated()->isSameDay($date)) {
                 $forecasts[] = $weather;
             }
         }
@@ -99,14 +99,15 @@ class Forecast
      * - visibility
      * - pressure
      * - clouds
-     * 
+     *
      * @throws \InvalidArgumentException Thrown when property value cannot be calculated or property does not exist
      * @return int
      */
     private function getAverage(string $property)
     {
-        if (!in_array($property, ['temperature', 'maxTemperature', 'minTemperature', 'feelsLike', 'humidity', 'visibility', 'pressure', 'clouds']))
+        if (!in_array($property, ['temperature', 'maxTemperature', 'minTemperature', 'feelsLike', 'humidity', 'visibility', 'pressure', 'clouds'])) {
             throw new \InvalidArgumentException('Average value for that property is not available or property does not exist.');
+        }
 
         $method = 'get' . ucfirst($property);
         foreach ($this->forecasts as $weather) {

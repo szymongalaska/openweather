@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Bejblade\OpenWeather\Model;
 
+use Bejblade\OpenWeather\OpenWeatherDate;
 use Bejblade\OpenWeather\Config;
 
 class Weather
@@ -53,11 +54,8 @@ class Weather
     /** @var float|null Probability of precipitation (only in forecast) */
     private ?float $probabilityOfPrecipitation = null;
 
-    /** @var \DateTime Date and time of last data calculation */
-    private \DateTime $lastUpdated;
-
-    /** @var string Date format applied to `$lastUpdated` */
-    private string $dateFormat;
+    /** @var OpenWeatherDate and time of last data calculation */
+    private OpenWeatherDate $lastUpdated;
 
     /** @var string Units in which some of parameters are formatted */
     private string $units;
@@ -79,9 +77,7 @@ class Weather
         $this->rain = isset($data['rain']) ? $this->determineRain($data['rain']) : null;
         $this->snow = isset($data['snow']) ? $this->determineSnow($data['snow']) : null;
         $this->probabilityOfPrecipitation = $data['pop'] ?? null;
-        $this->lastUpdated = new \DateTime('@' . $data['dt']);
-        $this->lastUpdated->setTimezone(new \DateTimeZone(Config::configuration()->get('timezone')));
-        $this->dateFormat = $this->getDateFormat();
+        $this->lastUpdated = new OpenWeatherDate('@' . $data['dt']);
         $this->units = Config::configuration()->get('units');
     }
 
@@ -241,10 +237,10 @@ class Weather
     }
 
     /**
-     * Get last update time
-     * @return \DateTime
+     * Get last update time object
+     * @return OpenWeatherDate
      */
-    public function getLastUpdated(): \DateTime
+    public function getLastUpdated(): OpenWeatherDate
     {
         return $this->lastUpdated;
     }
@@ -255,7 +251,7 @@ class Weather
      */
     public function getLastUpdateTime(): string
     {
-        return $this->lastUpdated->format($this->dateFormat);
+        return $this->lastUpdated->getFormatted();
     }
 
     /**
@@ -296,26 +292,4 @@ class Weather
         return $diff >= 600; // 10 minutes
     }
 
-    /**
-     * Set dateFormat according to configuration
-     * @return string
-     */
-    private function getDateFormat(): string
-    {
-        return $this->dateFormat = preg_replace(
-            '/d|D|j|l|N|S|w|z/',
-            Config::configuration()->get('day_format'),
-            Config::configuration()->get('date_format') . ' ' . Config::configuration()->get('time_format')
-        );
-    }
-
-    /**
-     * Helper method that checks if weather last update date is same as given date
-     * @param \DateTimeInterface $date Date to compare
-     * @return bool
-     */
-    public function isSameDay(\DateTimeInterface $date): bool
-    {
-        return $date->format('Y-m-d') == $this->lastUpdated->format('Y-m-d');
-    }
 }
