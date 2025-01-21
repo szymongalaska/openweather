@@ -18,17 +18,8 @@ class Weather
     /** @var string Weather icon id */
     private string $icon;
 
-    /** @var float Current temperature */
-    private float $temperature;
-
-    /** @var float Human perception of current temperature */
-    private float $feelsLike;
-
-    /** @var float Minimum temperature observed within large megalopolises and urban areas */
-    private float $minTemperature;
-
-    /** @var float Maximum temperature observed within large megalopolises and urban areas */
-    private float $maxTemperature;
+    /** @var Temperature Current temperature data */
+    private Temperature $temperature;
 
     /** @var int Atmospheric pressure on the sea level in hPa */
     private int $pressure;
@@ -65,10 +56,7 @@ class Weather
         $this->weather = $data['weather'][0]['main'];
         $this->description = $data['weather'][0]['description'];
         $this->icon = $data['weather'][0]['icon'];
-        $this->temperature = $data['main']['temp'];
-        $this->feelsLike = $data['main']['feels_like'];
-        $this->minTemperature = $data['main']['temp_min'];
-        $this->maxTemperature = $data['main']['temp_max'];
+        $this->temperature = new Temperature($data['main']['temperature']);
         $this->pressure = $data['main']['pressure'];
         $this->humidity = $data['main']['humidity'];
         $this->visibility = $data['visibility'];
@@ -128,40 +116,9 @@ class Weather
         return $this->icon;
     }
 
-    /**
-     * Get current temperature
-     * @return float
-     */
-    public function getTemperature(): float
+    public function temperature(): Temperature
     {
         return $this->temperature;
-    }
-
-    /**
-     * Get feels like temperature
-     * @return float
-     */
-    public function getFeelsLike(): float
-    {
-        return $this->feelsLike;
-    }
-
-    /**
-     * Get minimum temperature
-     * @return float
-     */
-    public function getMinTemperature(): float
-    {
-        return $this->minTemperature;
-    }
-
-    /**
-     * Get maximum temperature
-     * @return float
-     */
-    public function getMaxTemperature(): float
-    {
-        return $this->maxTemperature;
     }
 
     /**
@@ -195,7 +152,7 @@ class Weather
      * Get wind data
      * @return Wind
      */
-    public function getWind(): Wind
+    public function wind(): Wind
     {
         return $this->wind;
     }

@@ -131,7 +131,7 @@ class WeatherCollection implements \Countable
             throw new \InvalidArgumentException('Average value for that property is not available or property does not exist.');
         }
 
-        $property = match($property){
+        $property = match($property) {
             'temperature' => 'current',
             'maxTemperature' => 'max',
             'minTemperature' => 'min',
@@ -140,10 +140,11 @@ class WeatherCollection implements \Countable
 
         $method = 'get' . ucfirst($property);
         foreach ($this->collection as $weather) {
-            if(in_array($property, ['current', 'max', 'min', 'feelsLike']))
+            if (in_array($property, ['current', 'max', 'min', 'feelsLike'])) {
                 $values[] = $weather->temperature()->$method();
-            else
+            } else {
                 $values[] = $weather->$method();
+            }
         }
 
         $averageValue = array_sum($values) / count($values);
