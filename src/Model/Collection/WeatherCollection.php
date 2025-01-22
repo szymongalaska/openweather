@@ -132,7 +132,7 @@ class WeatherCollection implements \Countable
         }
 
         $property = match($property) {
-            'temperature' => 'current',
+            'temperature' => '',
             'maxTemperature' => 'max',
             'minTemperature' => 'min',
             default => $property
@@ -140,7 +140,7 @@ class WeatherCollection implements \Countable
 
         $method = 'get' . ucfirst($property);
         foreach ($this->collection as $weather) {
-            if (in_array($property, ['current', 'max', 'min', 'feelsLike'])) {
+            if (in_array($property, ['', 'current', 'max', 'min', 'feelsLike'])) {
                 $values[] = $weather->temperature()->$method();
             } else {
                 $values[] = $weather->$method();
