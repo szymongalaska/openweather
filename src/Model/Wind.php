@@ -16,7 +16,7 @@ class Wind
      * Wind direction in meteorogical degrees
      * @var int
      */
-    public int $direction;
+    public float $direction;
 
     /**
      * Wind gust in meter/sec or miles/hour

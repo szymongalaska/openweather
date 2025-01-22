@@ -4,14 +4,13 @@ declare(strict_types=1);
 
 namespace Bejblade\OpenWeather\Endpoint\Geocoding;
 
-use Bejblade\OpenWeather\Endpoint\Endpoint;
 use Bejblade\OpenWeather\Model\Location;
 use Bejblade\OpenWeather\Config;
 
 /**
  * Direct Geocoding endpoint. Fetch Location data by city name, state code and country code
  */
-class GeocodingDirectEndpoint extends Endpoint
+class GeocodingDirectEndpoint extends GeocodingEndpoint
 {
     /**
      * @param array{q:string, limit:int} $options Parameters to use in call
@@ -20,7 +19,7 @@ class GeocodingDirectEndpoint extends Endpoint
      *
      * @return Location[]
      */
-    public function call(array $options = [])
+    public function call(array $options = []): array
     {
         $response = $this->getResponse($options);
 
@@ -36,7 +35,7 @@ class GeocodingDirectEndpoint extends Endpoint
 
     protected function buildUrl(): string
     {
-        return 'geo' . '/' . $this->apiVersion . '/' . $this->getEndpoint();
+        return parent::buildUrl() . $this->getEndpoint();
     }
 
     protected function configure(): void

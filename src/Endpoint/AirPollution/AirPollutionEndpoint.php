@@ -20,7 +20,7 @@ class AirPollutionEndpoint extends Endpoint implements LocationAwareEndpointInte
      *
      * @return AirPollution
      */
-    public function call(array $options = [])
+    public function call(array $options = []): AirPollution
     {
         $response = $this->getResponse($options);
 

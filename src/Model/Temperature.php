@@ -8,8 +8,8 @@ use Bejblade\OpenWeather\Config;
 
 class Temperature
 {
-    /** @var float|null Current temperature */
-    private ?float $current;
+    /** @var float|null Current or day average temperature */
+    private ?float $temperature;
 
     /** @var float|null Maximum temperature */
     private ?float $maximum;
@@ -17,8 +17,8 @@ class Temperature
     /** @var float|null Minimum temperature */
     private ?float $minimum;
 
-    /** @var float|null Human perception of current temperature */
-    private ?float $feelsLike;
+    /** @var Temperature|float|null Human perception of current temperature */
+    private Temperature|float|null $feelsLike;
 
     /** @var float|null Temperature at 06:00 */
     private ?float $morning;
@@ -36,8 +36,14 @@ class Temperature
 
     public function __construct(array $data)
     {
-        $this->current = $data['temp'] ?? null;
-        $this->feelsLike = $data['feels_like'] ?? null;
+        $this->temperature = $data['temp'] ?? null;
+
+        if (isset($data['feels_like']) && is_array($data['feels_like'])) {
+            $this->feelsLike = new self($data['feels_like']);
+        } else {
+            $this->feelsLike = $data['feels_like'] ?? null;
+        }
+
         $this->maximum = $data['max'] ?? null;
         $this->minimum = $data['min'] ?? null;
         $this->morning = $data['morning'] ?? null;
@@ -57,19 +63,19 @@ class Temperature
     }
 
     /**
-     * Get current temperature
+     * Get current or day average temperature
      * @return float|null
      */
-    public function getCurrent(): float|null
+    public function get(): float|null
     {
-        return $this->current;
+        return $this->temperature;
     }
 
     /**
      * Get feels like temperature
-     * @return float|null
+     * @return Temperature|float|null
      */
-    public function getFeelsLike(): float|null
+    public function getFeelsLike(): Temperature|float|null
     {
         return $this->feelsLike;
     }

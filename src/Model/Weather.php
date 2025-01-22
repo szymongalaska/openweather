@@ -9,32 +9,38 @@ use Bejblade\OpenWeather\Config;
 
 class Weather
 {
-    /** @var string Weather name */
-    private string $weather;
+    /** @var string|null Weather name */
+    private ?string $weather;
 
-    /** @var string Weather description */
-    private string $description;
+    /** @var string|null Weather description */
+    private ?string $description;
 
-    /** @var string Weather icon id */
-    private string $icon;
+    /** @var string|null Weather icon id */
+    private ?string $icon;
+
+    /** @var OpenWeatherDate|null Sunrise time */
+    private ?OpenWeatherDate $sunrise;
+
+    /** @var OpenWeatherDate|null Sunset time */
+    private ?OpenWeatherDate $sunset;
 
     /** @var Temperature Current temperature data */
     private Temperature $temperature;
 
-    /** @var int Atmospheric pressure on the sea level in hPa */
-    private int $pressure;
+    /** @var int|null Atmospheric pressure on the sea level in hPa */
+    private ?int $pressure;
 
-    /** @var int Humidity in % */
-    private int $humidity;
+    /** @var int|null Humidity in % */
+    private ?int $humidity;
 
-    /** @var int Visibility in meters, maximum is 10km */
-    private int $visibility;
+    /** @var int|null Visibility in meters, maximum is 10km */
+    private ?int $visibility;
 
-    /** @var Wind Wind data of current weather */
-    private Wind $wind;
+    /** @var Wind|null Wind data of current weather */
+    private ?Wind $wind;
 
-    /** @var int Cloudiness in % */
-    private int $clouds;
+    /** @var int|null Cloudiness in % */
+    private ?int $clouds;
 
     /** @var float|null Precipitation of rain in mm/h */
     private ?float $rain;
@@ -53,40 +59,36 @@ class Weather
 
     public function __construct(array $data)
     {
-        $this->weather = $data['weather'][0]['main'];
-        $this->description = $data['weather'][0]['description'];
-        $this->icon = $data['weather'][0]['icon'];
-        $this->temperature = new Temperature($data['main']['temperature']);
-        $this->pressure = $data['main']['pressure'];
-        $this->humidity = $data['main']['humidity'];
-        $this->visibility = $data['visibility'];
-        $this->wind = new Wind($data['wind']);
-        $this->clouds = $data['clouds']['all'];
-        $this->rain = isset($data['rain']) ? $this->determineRain($data['rain']) : null;
-        $this->snow = isset($data['snow']) ? $this->determineSnow($data['snow']) : null;
+        $this->weather = $data['weather'][0]['main'] ?? null;
+        $this->description = $data['weather'][0]['description'] ?? null;
+        $this->icon = $data['weather'][0]['icon'] ?? null;
+        $this->sunrise = isset($data['sunrise']) ? new OpenWeatherDate("@{$data['sunrise']}") : null;
+        $this->sunset = isset($data['sunset']) ? new OpenWeatherDate("@{$data['sunset']}") : null;
+        $this->temperature = new Temperature($data['temperature']);
+        $this->pressure = $data['main']['pressure'] ?? null;
+        $this->humidity = $data['main']['humidity'] ?? null;
+        $this->visibility = $data['visibility'] ?? null;
+        $this->wind = isset($data['wind']) ? new Wind($data['wind']) : null;
+        $this->clouds = $data['clouds']['all'] ?? null;
+        $this->rain = isset($data['rain']) ? $this->determinePrecipitation($data['rain']) : null;
+        $this->snow = isset($data['snow']) ? $this->determinePrecipitation($data['snow']) : null;
         $this->probabilityOfPrecipitation = $data['pop'] ?? null;
-        $this->lastUpdated = new OpenWeatherDate('@' . $data['dt']);
+        $this->lastUpdated = new OpenWeatherDate("@{$data['dt']}");
         $this->units = Config::configuration()->get('units');
     }
 
     /**
-     * Get rain value to set
-     * @param array $rain
-     * @return float
+     * Get precipitation value to set
+     * @param array $precipitation
+     * @return float|null
      */
-    private function determineRain(array $rain): float
+    private function determinePrecipitation(array $precipitation): float|null
     {
-        return array_key_first($rain) == '1h' ? $rain['1h'] : $rain['3h'] / 3;
-    }
+        if (empty($precipitation['1h']) && empty($precipitation['3h'])) {
+            return null;
+        }
 
-    /**
-     * Get snow value to set
-     * @param array $snow
-     * @return float
-     */
-    private function determineSnow(array $snow): float
-    {
-        return array_key_first($snow) == '1h' ? $snow['1h'] : $snow['3h'] / 3;
+        return array_key_first($precipitation) == '1h' ? $precipitation['1h'] : $precipitation['3h'] / 3;
     }
 
     /**

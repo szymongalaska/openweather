@@ -4,14 +4,12 @@ declare(strict_types=1);
 
 namespace Bejblade\OpenWeather\Endpoint\Geocoding;
 
-use Bejblade\OpenWeather\Endpoint\Endpoint;
 use Bejblade\OpenWeather\Model\Location;
-use Bejblade\OpenWeather\Config;
 
 /**
  * Reverse Geocoding endpoint. Fetch Location data by latitude and longitute
  */
-class GeocodingReverseEndpoint extends Endpoint
+class GeocodingReverseEndpoint extends GeocodingEndpoint
 {
     /**
      * @param array{lat:int, lon:int, limit:int} $options Parameters to use in call
@@ -21,7 +19,7 @@ class GeocodingReverseEndpoint extends Endpoint
      *
      * @return Location[]
      */
-    public function call(array $options = [])
+    public function call(array $options = []): array
     {
         $response = $this->getResponse($options);
 
@@ -37,20 +35,13 @@ class GeocodingReverseEndpoint extends Endpoint
 
     protected function buildUrl(): string
     {
-        return 'geo' . '/' . $this->apiVersion . '/' . $this->getEndpoint();
-    }
-
-    protected function configure(): void
-    {
-        parent::configure();
-        $this->apiVersion = Config::configuration()->get('geo_api_version');
+        return parent::buildUrl() . $this->getEndpoint();
     }
 
     protected function getAvailableOptions(): array
     {
         return ['lat', 'lon', 'limit'];
     }
-
 
     protected function validate(array $options): void
     {

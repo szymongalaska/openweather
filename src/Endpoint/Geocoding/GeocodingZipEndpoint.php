@@ -4,14 +4,12 @@ declare(strict_types=1);
 
 namespace Bejblade\OpenWeather\Endpoint\Geocoding;
 
-use Bejblade\OpenWeather\Endpoint\Endpoint;
 use Bejblade\OpenWeather\Model\Location;
-use Bejblade\OpenWeather\Config;
 
 /**
  * Zip Geocoding endpoint. Fetch Location data by zip code, country code
  */
-class GeocodingZipEndpoint extends Endpoint
+class GeocodingZipEndpoint extends GeocodingEndpoint
 {
     /**
      * @param array{zip:string} $options Parameters to use in call
@@ -19,7 +17,7 @@ class GeocodingZipEndpoint extends Endpoint
      *
      * @return Location
      */
-    public function call(array $options = [])
+    public function call(array $options = []): Location
     {
         $response = $this->getResponse($options);
 
@@ -33,13 +31,7 @@ class GeocodingZipEndpoint extends Endpoint
 
     protected function buildUrl(): string
     {
-        return 'geo' . '/' . $this->apiVersion . '/' . $this->getEndpoint();
-    }
-
-    protected function configure(): void
-    {
-        parent::configure();
-        $this->apiVersion = Config::configuration()->get('geo_api_version');
+        return parent::buildUrl() . $this->getEndpoint();
     }
 
     protected function getAvailableOptions(): array

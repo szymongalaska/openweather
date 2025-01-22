@@ -36,17 +36,8 @@ class ForecastEndpoint extends Endpoint implements LocationAwareEndpointInterfac
         }
 
         $response = $this->getResponse($options);
-        return $this->convertResponseToWeatherCollection($response['list']);
-    }
-
-    /**
-     * Convert forecast response to Weather list and return Forecast
-     * @param array $response Array of forecasts
-     * @return WeatherCollection
-     */
-    private function convertResponseToWeatherCollection(array $weatherList): WeatherCollection
-    {
-        return new WeatherCollection($weatherList);
+        $response['list'] = $this->parseTemperature($response['list']);
+        return new WeatherCollection($response['list']);
     }
 
     /**
@@ -64,6 +55,23 @@ class ForecastEndpoint extends Endpoint implements LocationAwareEndpointInterfac
         return $this->call($options);
     }
 
+    private function parseTemperature(array $data)
+    {
+        return array_map(function ($row) {
+            $row['temperature'] = [
+                'temp' => $row['main']['temp'],
+                'feels_like' => $row['main']['feels_like'],
+                'min' => $row['main']['temp_min'],
+                'max' => $row['main']['temp_max']
+            ];
+
+            return $row;
+        }, $data);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function getEndpoint(): string
     {
         return 'forecast';
@@ -71,7 +79,7 @@ class ForecastEndpoint extends Endpoint implements LocationAwareEndpointInterfac
 
     protected function getAvailableOptions(): array
     {
-        return ['lat', 'lon', 'cnt'];
+        return ['lat', 'lon', 'cnt', 'units'];
     }
 
     protected function validate(array $options): void
