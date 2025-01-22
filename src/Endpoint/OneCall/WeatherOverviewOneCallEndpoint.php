@@ -17,7 +17,7 @@ class WeatherOverviewOneCallEndpoint extends OneCallEndpoint implements Location
      * - `lon` - Longitude
      * - `date` - The date the user wants to get a weather summary in the YYYY-MM-DD format. Data is available for today and tomorrow. If not specified, the current date will be used by default. Please note that the date is determined by the timezone relevant to the coordinates specified in the API request
      *
-     * @return
+     * @return string
      */
     public function call(array $options = []): string
     {
@@ -31,13 +31,14 @@ class WeatherOverviewOneCallEndpoint extends OneCallEndpoint implements Location
     /**
      * @param array{date:string} $options Parameters to use in call
      * - `date` - The date the user wants to get a weather summary in the YYYY-MM-DD format. Data is available for today and tomorrow. If not specified, the current date will be used by default. Please note that the date is determined by the timezone relevant to the coordinates specified in the API request
+     *
+     * @return string
      */
-    public function callWithLocation(\Bejblade\OpenWeather\Model\Location $location, array $options = [])
+    public function callWithLocation(\Bejblade\OpenWeather\Model\Location $location, array $options = []): string
     {
         $options = array_merge(['lat' => $location->getLatitude(), 'lon' => $location->getLongitude()], $options);
         return $this->call($options);
     }
-
 
     public function getEndpoint(): string
     {

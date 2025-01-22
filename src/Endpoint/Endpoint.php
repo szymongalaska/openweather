@@ -14,22 +14,23 @@ use Bejblade\OpenWeather\Config;
 abstract class Endpoint implements EndpointInterface
 {
     /**
-    * API version to use in endpoint request
-    * @var string
-    */
+     * API version to use in endpoint request
+     * @var string
+     */
     protected string $apiVersion;
 
     /**
-     * Language in which API will be
+     * Language in which API data will be fetched
      * @var string
      */
     protected string $language;
 
     /**
-     * Units format in which API data will be
+     * Units format in which API data will be fetched
      * @var string
      */
     protected string $units;
+
     /**
      * Client used to call API
      * @var OpenWeatherClient
@@ -58,6 +59,12 @@ abstract class Endpoint implements EndpointInterface
     abstract public function getEndpoint(): string;
 
     /**
+     * Returns array of available options to use in request
+     * @return array
+     */
+    abstract protected function getAvailableOptions(): array;
+
+    /**
      * Build URL which will be used to make API request
      * @return string
      */
@@ -66,11 +73,12 @@ abstract class Endpoint implements EndpointInterface
         return 'data' . '/' . $this->apiVersion . '/' . $this->getEndpoint();
     }
 
-    /**
-     * Returns array of available options to use in request
-     * @return array
-     */
-    abstract protected function getAvailableOptions(): array;
+    protected function configure(): void
+    {
+        $this->apiVersion = Config::configuration()->get('api_version');
+        $this->language = Config::configuration()->get('language');
+        $this->units = Config::configuration()->get('units');
+    }
 
     /**
      * Validate options provided are supported or are correctly set
@@ -80,13 +88,6 @@ abstract class Endpoint implements EndpointInterface
     protected function validate(array $options): void
     {
         $this->validateOptionsSupport($options);
-    }
-
-    protected function configure(): void
-    {
-        $this->apiVersion = Config::configuration()->get('api_version');
-        $this->language = Config::configuration()->get('language');
-        $this->units = Config::configuration()->get('units');
     }
 
     /**
@@ -99,7 +100,7 @@ abstract class Endpoint implements EndpointInterface
     {
         $invalidOptions = array_diff(array_keys($options), $this->getAvailableOptions());
         if (!empty($invalidOptions)) {
-            throw new \InvalidArgumentException('Options not supported: '.implode($invalidOptions));
+            throw new \InvalidArgumentException('Options not supported: ' . implode($invalidOptions));
         }
 
         return true;

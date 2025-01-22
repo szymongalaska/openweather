@@ -25,7 +25,7 @@ class WeatherEndpoint extends Endpoint implements LocationAwareEndpointInterface
         $options['units'] = $this->units;
 
         $response = $this->getResponse($options);
-        $response = $this->parseTemperature($response);
+        $response = $this->parseResponseData($response);
 
         return new Weather($response);
     }
@@ -41,26 +41,14 @@ class WeatherEndpoint extends Endpoint implements LocationAwareEndpointInterface
         return $this->call(['lat' => $location->getLatitude(), 'lon' => $location->getLongitude()]);
     }
 
-    private function parseTemperature(array $weather): array
+    public function getEndpoint(): string
     {
-        $weather['temperature'] = [
-            'temp' => $weather['main']['temp'],
-            'feels_like' => $weather['main']['feels_like'],
-            'min' => $weather['main']['temp_min'],
-            'max' => $weather['main']['temp_max']
-        ];
-
-        return $weather;
+        return 'weather';
     }
 
     protected function getAvailableOptions(): array
     {
         return ['lat', 'lon', 'units'];
-    }
-
-    public function getEndpoint(): string
-    {
-        return 'weather';
     }
 
     protected function validate(array $options): void
@@ -70,5 +58,22 @@ class WeatherEndpoint extends Endpoint implements LocationAwareEndpointInterface
         if ((!isset($options['lat']) || !isset($options['lon']))) {
             throw new \InvalidArgumentException('Missing latitude and/or longitude parameter');
         }
+    }
+
+    /**
+     * Parse response data (group temperature data)
+     * @param array $data Response data to parse
+     * @return array
+     */
+    private function parseResponseData(array $data): array
+    {
+        $data['temperature'] = [
+            'temp' => $data['main']['temp'],
+            'feels_like' => $data['main']['feels_like'],
+            'min' => $data['main']['temp_min'],
+            'max' => $data['main']['temp_max']
+        ];
+
+        return $data;
     }
 }
