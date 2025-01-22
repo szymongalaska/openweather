@@ -67,7 +67,11 @@ class OpenWeather
             'geo.reverse' => new Endpoint\Geocoding\GeocodingReverseEndpoint($this->client),
             'air.pollution' => new Endpoint\AirPollution\AirPollutionEndpoint($this->client),
             'air.forecast' => new Endpoint\AirPollution\AirPollutionForecastEndpoint($this->client),
-            'air.history' => new Endpoint\AirPollution\AirPollutionHistoryEndpoint($this->client)
+            'air.history' => new Endpoint\AirPollution\AirPollutionHistoryEndpoint($this->client),
+            'onecall' => new Endpoint\OneCall\WeatherAndForecastOneCallEndpoint($this->client),
+            'onecall.timemachine' => new Endpoint\OneCall\TimemachineOneCallEndpoint($this->client),
+            'onecall.aggregation' => new Endpoint\OneCall\DailyAggregationOneCallEndpoint($this->client),
+            'onecall.overview' => new Endpoint\OneCall\WeatherOverviewOneCallEndpoint($this->client),
         ];
     }
 
@@ -98,9 +102,9 @@ class OpenWeather
     /**
      * Get `Forecast` by `Location` object
      * @param \Bejblade\OpenWeather\Model\Location $location
-     * @return Model\Forecast|null
+     * @return Model\Collection\WeatherCollection|null
      */
-    public function getForecast(\Bejblade\OpenWeather\Model\Location $location): Model\Forecast|null
+    public function getForecast(\Bejblade\OpenWeather\Model\Location $location): Model\Collection\WeatherCollection|null
     {
         $location->setForecast($this->getEndpoint('forecast')->callWithLocation($location));
         return $location->getForecast();
