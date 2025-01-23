@@ -267,6 +267,24 @@ class Weather
     }
 
     /**
+     * Get sunrise time
+     * @return OpenWeatherDate|null
+     */
+    public function sunrise(): OpenWeatherDate|null
+    {
+        return $this->sunrise;
+    }
+
+    /**
+     * Get sunset time
+     * @return OpenWeatherDate|null
+     */
+    public function sunset(): OpenWeatherDate|null
+    {
+        return $this->sunset;
+    }
+
+    /**
      * Check if there is any rain
      * @return bool
      */
