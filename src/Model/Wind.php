@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Bejblade\OpenWeather\Model;
 
+/**
+ * Wind model
+ */
 class Wind
 {
     /**

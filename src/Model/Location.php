@@ -4,8 +4,11 @@ declare(strict_types=1);
 
 namespace Bejblade\OpenWeather\Model;
 
-use Bejblade\OpenWeather\Model\Collection\WeatherCollection;
+use Bejblade\OpenWeather\Model\Forecast;
 
+/**
+ * Location model
+ */
 class Location
 {
     /**
@@ -45,26 +48,24 @@ class Location
     private ?string $state;
 
     /**
-     * Current weather
+     * Weather data
      * @var Weather|null
      */
     private ?Weather $weather = null;
 
     /**
-     * Forecast
-     * @var WeatherCollection|null
+     * Forecast data
+     * @var Forecast|null
      */
-    private ?WeatherCollection $forecast = null;
+    private ?Forecast $forecast = null;
 
     /**
-     * AirPollution object
+     * AirPollution data
      * @var AirPollution|null
      */
     private ?AirPollution $airPollution = null;
 
     /**
-     * Constructor to initialize location data
-     *
      * @param array $data Array containing location information
      */
     public function __construct(array $data)
@@ -144,9 +145,9 @@ class Location
 
     /**
      * Get forecast
-     * @return WeatherCollection|null
+     * @return Forecast|null
      */
-    public function getForecast(): ?WeatherCollection
+    public function forecast(): ?Forecast
     {
         return $this->forecast;
     }
@@ -155,7 +156,7 @@ class Location
      * Get weather object
      * @return Weather|null
      */
-    public function getWeather(): ?Weather
+    public function weather(): ?Weather
     {
         return $this->weather;
     }
@@ -199,10 +200,10 @@ class Location
     /**
      * Set forecast
      *
-     * @param WeatherCollection $forecast
+     * @param Forecast $forecast
      * @return void
      */
-    public function setForecast(WeatherCollection $forecast): void
+    public function setForecast(Forecast $forecast): void
     {
         $this->forecast = $forecast;
     }

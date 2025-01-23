@@ -6,32 +6,55 @@ namespace Bejblade\OpenWeather\Model;
 
 use Bejblade\OpenWeather\Config;
 
+/**
+ * Temperature model
+ */
 class Temperature
 {
-    /** @var float|null Current or day average temperature */
+    /** Current or day average temperature
+     * @var float|null
+     */
     private ?float $temperature;
 
-    /** @var float|null Maximum temperature */
+    /** Maximum temperature
+     * @var float|null
+     */
     private ?float $maximum;
 
-    /** @var float|null Minimum temperature */
+    /** Minimum temperature
+     * @var float|null
+     */
     private ?float $minimum;
 
-    /** @var Temperature|float|null Human perception of current temperature */
+    /** Human perception of current temperature
+     * @var Temperature|float|null
+     */
     private Temperature|float|null $feelsLike;
 
-    /** @var float|null Temperature at 06:00 */
+    /** Temperature at 06:00
+     * @var float|null
+     */
     private ?float $morning;
 
-    /** @var float|null Temperature at 12:00 */
+    /** Temperature at 12:00
+     * @var float|null
+     */
     private ?float $afternoon;
 
-    /** @var float|null Temperature at 18:00 */
+    /** Temperature at 18:00
+     * @var float|null
+     */
     private ?float $evening;
 
-    /** @var float|null Temperature at 00:00 */
+    /** Temperature at 00:00
+     * @var float|null
+     */
     private ?float $night;
 
+    /**
+     * Units of temperature data
+     * @var string
+     */
     private string $units;
 
     public function __construct(array $data)
@@ -53,6 +76,10 @@ class Temperature
         $this->setUnits();
     }
 
+    /**
+     * Set value to `units` property
+     * @return void
+     */
     private function setUnits(): void
     {
         $this->units = match (Config::configuration()->get('units')) {

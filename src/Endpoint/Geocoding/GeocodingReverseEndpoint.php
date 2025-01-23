@@ -12,16 +12,16 @@ use Bejblade\OpenWeather\Model\Location;
 class GeocodingReverseEndpoint extends GeocodingEndpoint
 {
     /**
-     * @param array{lat:int, lon:int, limit:int} $options Parameters to use in call
+     * @param array{lat:int, lon:int, limit:int} $params Parameters to use in call
      * - `lat` - Required. Latitude
      * - `lon` - Required. Longitude
      * - `limit` - Number of locations to retrieve
      *
      * @return Location[]
      */
-    public function call(array $options = []): array
+    public function call(array $params = []): array
     {
-        $response = $this->getResponse($options);
+        $response = $this->getResponse($params);
 
         return array_map(function ($item) {
             return new Location($item);
@@ -43,12 +43,17 @@ class GeocodingReverseEndpoint extends GeocodingEndpoint
         return ['lat', 'lon', 'limit'];
     }
 
-    protected function validate(array $options): void
+    /**
+     * @param array $params Parameters to validate
+     * @throws \InvalidArgumentException Thrown when required parameters are missing
+     * @return void
+     */
+    protected function validate(array $params): void
     {
-        parent::validate($options);
+        parent::validate($params);
 
-        if (!isset($options['lat']) || !isset($options['lat'])) {
-            throw new \InvalidArgumentException();
+        if (!isset($params['lat']) || !isset($params['lat'])) {
+            throw new \InvalidArgumentException('Latitude and longitude parameters are required');
         }
     }
 }

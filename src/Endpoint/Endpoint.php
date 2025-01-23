@@ -45,16 +45,16 @@ abstract class Endpoint implements EndpointInterface
 
     /**
      * Return response from API as array
-     * @param array $options Options to use in API request
+     * @param array $params Parameters to use in API request
      * @return array
      */
-    protected function getResponse(array $options = []): array
+    protected function getResponse(array $params = []): array
     {
-        $this->validate($options);
-        return $this->client->callApi($this->buildUrl(), ['query' => $options]);
+        $this->validate($params);
+        return $this->client->callApi($this->buildUrl(), ['query' => $params]);
     }
 
-    abstract public function call(array $options = []);
+    abstract public function call(array $params = []);
 
     abstract public function getEndpoint(): string;
 
@@ -73,6 +73,10 @@ abstract class Endpoint implements EndpointInterface
         return 'data' . '/' . $this->apiVersion . '/' . $this->getEndpoint();
     }
 
+    /**
+     * Set configuration for endpoint
+     * @return void
+     */
     protected function configure(): void
     {
         $this->apiVersion = Config::configuration()->get('api_version');
@@ -81,26 +85,26 @@ abstract class Endpoint implements EndpointInterface
     }
 
     /**
-     * Validate options provided are supported or are correctly set
-     * @param array $options
+     * Validate that parameteres provided are supported and that they are correctly set
+     * @param array $params Parameters to validate
      * @return void
      */
-    protected function validate(array $options): void
+    protected function validate(array $params): void
     {
-        $this->validateOptionsSupport($options);
+        $this->validateOptionsSupport($params);
     }
 
     /**
-     * Validate that options provided are supported by current endpoint
-     * @param array $options
-     * @throws \InvalidArgumentException
+     * Validate that parameters provided are supported by current endpoint
+     * @param array $params Parameters to validate
+     * @throws \InvalidArgumentException When parameters are not supported
      * @return bool
      */
-    protected function validateOptionsSupport(array $options): bool
+    protected function validateOptionsSupport(array $params): bool
     {
-        $invalidOptions = array_diff(array_keys($options), $this->getAvailableOptions());
-        if (!empty($invalidOptions)) {
-            throw new \InvalidArgumentException('Options not supported: ' . implode($invalidOptions));
+        $invalidParams = array_diff(array_keys($params), $this->getAvailableOptions());
+        if (!empty($invalidParams)) {
+            throw new \InvalidArgumentException('Parameters not supported: ' . implode($invalidParams));
         }
 
         return true;

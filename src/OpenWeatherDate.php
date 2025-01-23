@@ -21,7 +21,7 @@ class OpenWeatherDate extends \DateTimeImmutable
     }
 
     /**
-     * Set dateFormat according to configuration
+     * Set `dateFormat` according to configuration
      * @return void
      */
     private function setDateFormat(): void
@@ -34,7 +34,7 @@ class OpenWeatherDate extends \DateTimeImmutable
     }
 
     /**
-     * Helper method that checks if this is same as given date
+     * Helper method that checks if this date is same as given date
      * @param \DateTimeInterface $date Date to compare
      * @return bool
      */

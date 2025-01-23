@@ -13,32 +13,32 @@ use Bejblade\OpenWeather\Model\Weather;
 class TimemachineOneCallEndpoint extends OneCallEndpoint implements LocationAwareEndpointInterface
 {
     /**
-     * @param array{lat:string, lon:int, dt:string} $options Parameters to use in call
+     * @param array{lat:string, lon:int, dt:string} $params Parameters to use in call
      * - `lat` - Latitude
      * - `lon` - Longitude
      * - `dt` - Timestamp (Unix time, UTC time zone). Data is available from January 1st, 1979 till 4 days ahead.
      *
      * @return Weather
      */
-    public function call(array $options = []): Weather
+    public function call(array $params = []): Weather
     {
-        $options['units'] = $this->units;
+        $params['units'] = $this->units;
 
-        $response = $this->getResponse($options);
+        $response = $this->getResponse($params);
 
         return $this->parseResponseData($response['data'][0]);
     }
 
     /**
-     * @param array{dt:string} $options Parameters to use in call
+     * @param array{dt:string} $params Parameters to use in call
      * - `dt` - Timestamp (Unix time, UTC time zone). Data is available from January 1st, 1979 till 4 days ahead.
      *
      * @return Weather
      */
-    public function callWithLocation(\Bejblade\OpenWeather\Model\Location $location, array $options = []): Weather
+    public function callWithLocation(\Bejblade\OpenWeather\Model\Location $location, array $params = []): Weather
     {
-        $options = array_merge(['lat' => $location->getLatitude(), 'lon' => $location->getLongitude()], $options);
-        return $this->call($options);
+        $params = array_merge(['lat' => $location->getLatitude(), 'lon' => $location->getLongitude()], $params);
+        return $this->call($params);
     }
 
     public function getEndpoint(): string
@@ -50,17 +50,21 @@ class TimemachineOneCallEndpoint extends OneCallEndpoint implements LocationAwar
     {
         return ['lat', 'lon', 'dt', 'units'];
     }
-
-    protected function validate(array $options): void
+    /**
+     * @param array $params Parameters to validate
+     * @throws \InvalidArgumentException Thrown when required parameters are missing
+     * @return void
+     */
+    protected function validate(array $params): void
     {
-        parent::validate($options);
+        parent::validate($params);
 
-        if ((!isset($options['lat']) || !isset($options['lon']))) {
-            throw new \InvalidArgumentException('Missing latitude and/or longitude parameter');
+        if ((!isset($params['lat']) || !isset($params['lon']))) {
+            throw new \InvalidArgumentException('Latitude and longitude parameters are required');
         }
 
-        if (!isset($options['dt'])) {
-            throw new \InvalidArgumentException('Timestamp parameter missing');
+        if (!isset($params['dt'])) {
+            throw new \InvalidArgumentException('Timestamp parameter is required');
         }
     }
 

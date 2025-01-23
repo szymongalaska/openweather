@@ -13,32 +13,32 @@ use Bejblade\OpenWeather\Model\Weather;
 class DailyAggregationOneCallEndpoint extends OneCallEndpoint implements LocationAwareEndpointInterface
 {
     /**
-     * @param array{lat:string, lon:int, date:string} $options Parameters to use in call
+     * @param array{lat:string, lon:int, date:string} $params Parameters to use in call
      * - `lat` - Latitude
      * - `lon` - Longitude
      * - `date` - Date in the `YYYY-MM-DD` format for which data is requested. Date is available for 46+ years archive (starting from 1979-01-02) up to the 1,5 years ahead forecast to the current date
      *
      * @return Weather
      */
-    public function call(array $options = []): Weather
+    public function call(array $params = []): Weather
     {
-        $options['units'] = $this->units;
+        $params['units'] = $this->units;
 
-        $response = $this->getResponse($options);
+        $response = $this->getResponse($params);
 
         return $this->parseResponseData($response);
     }
 
     /**
-     * @param array{date:string} $options Parameters to use in call
+     * @param array{date:string} $params Parameters to use in call
      * - `date` - Date in the `YYYY-MM-DD` format for which data is requested. Date is available for 46+ years archive (starting from 1979-01-02) up to the 1,5 years ahead forecast to the current date
      *
      * @return Weather
      */
-    public function callWithLocation(\Bejblade\OpenWeather\Model\Location $location, array $options = []): Weather
+    public function callWithLocation(\Bejblade\OpenWeather\Model\Location $location, array $params = []): Weather
     {
-        $options = array_merge(['lat' => $location->getLatitude(), 'lon' => $location->getLongitude()], $options);
-        return $this->call($options);
+        $params = array_merge(['lat' => $location->getLatitude(), 'lon' => $location->getLongitude()], $params);
+        return $this->call($params);
     }
 
     public function getEndpoint(): string
@@ -50,17 +50,21 @@ class DailyAggregationOneCallEndpoint extends OneCallEndpoint implements Locatio
     {
         return ['lat', 'lon', 'date', 'units'];
     }
-
-    protected function validate(array $options): void
+    /**
+     * @param array $params Parameters to validate
+     * @throws \InvalidArgumentException Thrown when required parameters are missing
+     * @return void
+     */
+    protected function validate(array $params): void
     {
-        parent::validate($options);
+        parent::validate($params);
 
-        if ((!isset($options['lat']) || !isset($options['lon']))) {
-            throw new \InvalidArgumentException('Missing latitude and/or longitude parameter');
+        if ((!isset($params['lat']) || !isset($params['lon']))) {
+            throw new \InvalidArgumentException('Latitude and longitude parameters are required');
         }
 
-        if (!isset($options['date'])) {
-            throw new \InvalidArgumentException('Date parameter missing');
+        if (!isset($params['date'])) {
+            throw new \InvalidArgumentException('Date parameter is required');
         }
     }
 

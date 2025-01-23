@@ -11,10 +11,10 @@ interface EndpointInterface
 {
     /**
      * Make a call to API endpoint
-     * @param array $options Parameters to use in call
+     * @param array $params Parameters to use in call
      * @return mixed
      */
-    public function call(array $options = []);
+    public function call(array $params = []);
 
     /**
      * Get name of endpoint

@@ -6,6 +6,9 @@ namespace Bejblade\OpenWeather\Model;
 
 use Bejblade\OpenWeather\Exception\UnsupportedFieldTypeException;
 
+/**
+ * Forecast model
+ */
 class Forecast implements \Countable
 {
     /**
@@ -64,7 +67,7 @@ class Forecast implements \Countable
     }
 
     /**
-     * Get the number of days between `dateRange` 
+     * Get the number of days between `dateRange`
      * @return int
      */
     private function numberOfDays(): int
@@ -108,8 +111,9 @@ class Forecast implements \Countable
      */
     private function getWeatherForDay(int $day = 0): Forecast|bool
     {
-        if ($day < 0 || $day > $this->numberOfDays())
+        if ($day < 0 || $day > $this->numberOfDays()) {
             throw new \OutOfRangeException("Data for requested day is not available");
+        }
 
         $date = new \DateTime("+{$day} day");
 

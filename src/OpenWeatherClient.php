@@ -27,16 +27,16 @@ class OpenWeatherClient extends Client
     /**
      * Send request to API and parse its response
      * @param string $url Request url
-     * @param array $options Request options to apply
-     * @throws OpenWeatherClientException
+     * @param array $params Request options to apply
+     * @throws OpenWeatherClientException Thrown when error occurred during requesting data from API
      * @return array
      */
-    public function callApi(string $url, array $options = []): array
+    public function callApi(string $url, array $params = []): array
     {
-        $options = array_merge_recursive($options, $this->defaultOptions);
+        $params = array_merge_recursive($params, $this->defaultOptions);
 
         try {
-            $response = $this->get($url, $options);
+            $response = $this->get($url, $params);
             return $this->parseResponse($response);
         } catch (\GuzzleHttp\Exception\ClientException $e) {
             throw new OpenWeatherClientException($e->getMessage(), $e->getRequest(), $e->getResponse());

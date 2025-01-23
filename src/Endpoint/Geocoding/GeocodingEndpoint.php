@@ -8,7 +8,7 @@ use Bejblade\OpenWeather\Endpoint\Endpoint;
 use Bejblade\OpenWeather\Config;
 
 /**
- *
+ * Abstract class for Geocoding endpoints
  */
 abstract class GeocodingEndpoint extends Endpoint
 {

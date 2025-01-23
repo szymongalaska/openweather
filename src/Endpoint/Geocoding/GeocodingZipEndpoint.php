@@ -12,14 +12,14 @@ use Bejblade\OpenWeather\Model\Location;
 class GeocodingZipEndpoint extends GeocodingEndpoint
 {
     /**
-     * @param array{zip:string} $options Parameters to use in call
+     * @param array{zip:string} $params Parameters to use in call
      * - `zip` - required and needs to be in this format `zip_code, country_code`
      *
      * @return Location
      */
-    public function call(array $options = []): Location
+    public function call(array $params = []): Location
     {
-        $response = $this->getResponse($options);
+        $response = $this->getResponse($params);
 
         return new Location($response);
     }
@@ -39,12 +39,17 @@ class GeocodingZipEndpoint extends GeocodingEndpoint
         return ['zip'];
     }
 
-    protected function validate(array $options): void
+    /**
+     * @param array $params Parameters to validate
+     * @throws \InvalidArgumentException Thrown when required parameters are missing
+     * @return void
+     */
+    protected function validate(array $params): void
     {
-        parent::validate($options);
+        parent::validate($params);
 
-        if (!isset($options['zip'])) {
-            throw new \InvalidArgumentException();
+        if (!isset($params['zip'])) {
+            throw new \InvalidArgumentException('Zip parameter is required');
         }
     }
 }

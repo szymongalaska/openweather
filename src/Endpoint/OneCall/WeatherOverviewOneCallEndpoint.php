@@ -12,37 +12,37 @@ use Bejblade\OpenWeather\Interface\LocationAwareEndpointInterface;
 class WeatherOverviewOneCallEndpoint extends OneCallEndpoint implements LocationAwareEndpointInterface
 {
     /**
-     * @param array{lat:string, lon:int, date:string} $options Parameters to use in call
+     * @param array{lat:string, lon:int, date:string} $params Parameters to use in call
      * - `lat` - Latitude
      * - `lon` - Longitude
-     * - `date` - The date the user wants to get a weather summary in the YYYY-MM-DD format. Data is available for today and tomorrow. If not specified, the current date will be used by default. Please note that the date is determined by the timezone relevant to the coordinates specified in the API request
+     * - `date` - The date of weather summary in the YYYY-MM-DD format. Data is available for today and tomorrow. If not specified, the current date will be used by default. Please note that the date is determined by the timezone relevant to the coordinates specified in the API request
      *
      * @return string
      */
-    public function call(array $options = []): string
+    public function call(array $params = []): string
     {
-        $options['units'] = $this->units;
+        $params['units'] = $this->units;
 
-        $response = $this->getResponse($options);
+        $response = $this->getResponse($params);
 
         return $response['weather_overview'];
     }
 
     /**
-     * @param array{date:string} $options Parameters to use in call
-     * - `date` - The date the user wants to get a weather summary in the YYYY-MM-DD format. Data is available for today and tomorrow. If not specified, the current date will be used by default. Please note that the date is determined by the timezone relevant to the coordinates specified in the API request
+     * @param array{date:string} $params Parameters to use in call
+     * - `date` - The date of weather summary in the YYYY-MM-DD format. Data is available for today and tomorrow. If not specified, the current date will be used by default. Please note that the date is determined by the timezone relevant to the coordinates specified in the API request
      *
      * @return string
      */
-    public function callWithLocation(\Bejblade\OpenWeather\Model\Location $location, array $options = []): string
+    public function callWithLocation(\Bejblade\OpenWeather\Model\Location $location, array $params = []): string
     {
-        $options = array_merge(['lat' => $location->getLatitude(), 'lon' => $location->getLongitude()], $options);
-        return $this->call($options);
+        $params = array_merge(['lat' => $location->getLatitude(), 'lon' => $location->getLongitude()], $params);
+        return $this->call($params);
     }
 
     public function getEndpoint(): string
     {
-        return parent::getEndpoint().'/overview';
+        return parent::getEndpoint() . '/overview';
     }
 
     protected function getAvailableOptions(): array
@@ -50,12 +50,17 @@ class WeatherOverviewOneCallEndpoint extends OneCallEndpoint implements Location
         return ['lat', 'lon', 'date', 'units'];
     }
 
-    protected function validate(array $options): void
+    /**
+     * @param array $params Parameters to validate
+     * @throws \InvalidArgumentException Thrown when required parameters are missing
+     * @return void
+     */
+    protected function validate(array $params): void
     {
-        parent::validate($options);
+        parent::validate($params);
 
-        if ((!isset($options['lat']) || !isset($options['lon']))) {
-            throw new \InvalidArgumentException('Missing latitude and/or longitude parameter');
+        if ((!isset($params['lat']) || !isset($params['lon']))) {
+            throw new \InvalidArgumentException('Latitude and longitude parameters are required');
         }
     }
 

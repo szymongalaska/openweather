@@ -13,15 +13,15 @@ use Bejblade\OpenWeather\Config;
 class GeocodingDirectEndpoint extends GeocodingEndpoint
 {
     /**
-     * @param array{q:string, limit:int} $options Parameters to use in call
+     * @param array{q:string, limit:int} $params Parameters to use in call
      * - `q` - required and needs to be in this format `city_name, state_code, country_code` (state_code only available when country_code is 'US')
      * - `limit` - Number of locations to retrieve
      *
      * @return Location[]
      */
-    public function call(array $options = []): array
+    public function call(array $params = []): array
     {
-        $response = $this->getResponse($options);
+        $response = $this->getResponse($params);
 
         return array_map(function ($item) {
             return new Location($item);
@@ -49,12 +49,17 @@ class GeocodingDirectEndpoint extends GeocodingEndpoint
         return ['q', 'limit'];
     }
 
-    protected function validate(array $options): void
+    /**
+     * @param array $params Parameters to validate
+     * @throws \InvalidArgumentException Thrown when required parameters are missing
+     * @return void
+     */
+    protected function validate(array $params): void
     {
-        parent::validate($options);
+        parent::validate($params);
 
-        if (!isset($options['q'])) {
-            throw new \InvalidArgumentException('Missing q argument');
+        if (!isset($params['q'])) {
+            throw new \InvalidArgumentException('Q parameter is required');
         }
     }
 

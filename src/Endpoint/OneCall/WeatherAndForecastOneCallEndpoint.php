@@ -6,7 +6,7 @@ namespace Bejblade\OpenWeather\Endpoint\OneCall;
 
 use Bejblade\OpenWeather\Interface\LocationAwareEndpointInterface;
 use Bejblade\OpenWeather\Model\Weather;
-use Bejblade\OpenWeather\Model\Collection\WeatherCollection;
+use Bejblade\OpenWeather\Model\Forecast;
 
 /**
  * Get current weather, minute forecast for 1 hour, hourly forecast for 48 hours, daily forecast for 8 days and government weather alerts data in with just one call
@@ -14,7 +14,7 @@ use Bejblade\OpenWeather\Model\Collection\WeatherCollection;
 class WeatherAndForecastOneCallEndpoint extends OneCallEndpoint implements LocationAwareEndpointInterface
 {
     /**
-     * @param array{lat:string, lon:int, exclude:string} $options Parameters to use in call
+     * @param array{lat:string, lon:int, exclude:string} $params Parameters to use in call
      * - `lat` - Latitude
      * - `lon` - Longitude
      * - `exclude` - By using this parameter you can exclude some parts of the weather data from the API response. It should be a comma-delimited list (without spaces).
@@ -25,17 +25,17 @@ class WeatherAndForecastOneCallEndpoint extends OneCallEndpoint implements Locat
      *    - `alerts` - Exclude National weather alerts data from major national weather warning systems
      * @return array
      */
-    public function call(array $options = []): array
+    public function call(array $params = []): array
     {
-        $options['units'] = $this->units;
+        $params['units'] = $this->units;
 
-        $response = $this->getResponse($options);
+        $response = $this->getResponse($params);
 
         return $this->parseResponseData($response);
     }
 
     /**
-     * @param array{exclude:string} $options
+     * @param array{exclude:string} $params
      * - `exclude` - By using this parameter you can exclude some parts of the weather data from the API response. It should be a comma-delimited list (without spaces).
      *    - `current` - Exclude current weather data
      *    - `minutely` - Exclude minute forecast for 1 hour
@@ -45,10 +45,10 @@ class WeatherAndForecastOneCallEndpoint extends OneCallEndpoint implements Locat
      *
      * @return array
      */
-    public function callWithLocation(\Bejblade\OpenWeather\Model\Location $location, array $options = []): array
+    public function callWithLocation(\Bejblade\OpenWeather\Model\Location $location, array $params = []): array
     {
-        $options = array_merge(['lat' => $location->getLatitude(), 'lon' => $location->getLongitude()], $options);
-        return $this->call($options);
+        $params = array_merge(['lat' => $location->getLatitude(), 'lon' => $location->getLongitude()], $params);
+        return $this->call($params);
     }
 
     protected function getAvailableOptions(): array
@@ -56,12 +56,17 @@ class WeatherAndForecastOneCallEndpoint extends OneCallEndpoint implements Locat
         return ['lat', 'lon', 'exclude', 'units'];
     }
 
-    protected function validate(array $options): void
+    /**
+     * @param array $params Parameters to validate
+     * @throws \InvalidArgumentException Thrown when required parameters are missing
+     * @return void
+     */
+    protected function validate(array $params): void
     {
-        parent::validate($options);
+        parent::validate($params);
 
-        if ((!isset($options['lat']) || !isset($options['lon']))) {
-            throw new \InvalidArgumentException('Missing latitude and/or longitude parameter');
+        if ((!isset($params['lat']) || !isset($params['lon']))) {
+            throw new \InvalidArgumentException('Latitude and longitude parameters are required');
         }
     }
 
@@ -72,7 +77,6 @@ class WeatherAndForecastOneCallEndpoint extends OneCallEndpoint implements Locat
      */
     private function parseResponseData(array $data): array
     {
-
         if (isset($data['current'])) {
             $data['current']['temperature'] = [
                 'temp' => $data['current']['temp'] ?? null,
@@ -117,7 +121,7 @@ class WeatherAndForecastOneCallEndpoint extends OneCallEndpoint implements Locat
                 return $row;
             }, $data['hourly']);
 
-            $parsedData['hourly'] = new WeatherCollection($data['hourly']);
+            $parsedData['hourly'] = new Forecast($data['hourly']);
         }
 
         if (isset($data['daily'])) {
@@ -146,10 +150,9 @@ class WeatherAndForecastOneCallEndpoint extends OneCallEndpoint implements Locat
                 return $row;
             }, $data['daily']);
 
-            $parsedData['daily'] = new WeatherCollection($data['daily']);
+            $parsedData['daily'] = new Forecast($data['daily']);
         }
 
         return $parsedData;
     }
-
 }

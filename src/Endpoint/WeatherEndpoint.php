@@ -9,34 +9,34 @@ use Bejblade\OpenWeather\Interface\LocationAwareEndpointInterface;
 use Bejblade\OpenWeather\Model\Weather;
 
 /**
- * Weather endpoint. Fetch current weather data by Location or latitude and longitude
+ * Weather endpoint. Fetch current weather data by `Location` or latitude and longitude
  */
 class WeatherEndpoint extends Endpoint implements LocationAwareEndpointInterface
 {
     /**
-     * @param array{lat:string, lon:string} $options Parameters to use in call
-     * - `lat` - Required. Latitude
-     * - `lon` - Required. Longitude
+     * @param array{lat:string, lon:string} $params Parameters to use in call
+     * - `lat` - Latitude of location (required)
+     * - `lon` - Longitude of location (required)
      *
      * @return Weather
      */
-    public function call(array $options = [])
+    public function call(array $params = [])
     {
-        $options['units'] = $this->units;
+        $params['units'] = $this->units;
 
-        $response = $this->getResponse($options);
+        $response = $this->getResponse($params);
         $response = $this->parseResponseData($response);
 
         return new Weather($response);
     }
 
     /**
-     * Make a call to API endpoint using Location model also weather as Location
+     * Make a call to API endpoint using Location model
      * @param \Bejblade\OpenWeather\Model\Location $location Location for which weather data will be fetched
-     * @param array $options Not used in this endpoint
+     * @param array $params Not used in this endpoint
      * @return Weather
      */
-    public function callWithLocation(\Bejblade\OpenWeather\Model\Location $location, array $options = []): Weather
+    public function callWithLocation(\Bejblade\OpenWeather\Model\Location $location, array $params = []): Weather
     {
         return $this->call(['lat' => $location->getLatitude(), 'lon' => $location->getLongitude()]);
     }
@@ -51,12 +51,17 @@ class WeatherEndpoint extends Endpoint implements LocationAwareEndpointInterface
         return ['lat', 'lon', 'units'];
     }
 
-    protected function validate(array $options): void
+    /**
+     * @param array $params Parameters to validate
+     * @throws \InvalidArgumentException Thrown when required parameters are missing
+     * @return void
+     */
+    protected function validate(array $params): void
     {
-        parent::validate($options);
+        parent::validate($params);
 
-        if ((!isset($options['lat']) || !isset($options['lon']))) {
-            throw new \InvalidArgumentException('Missing latitude and/or longitude parameter');
+        if ((!isset($params['lat']) || !isset($params['lon']))) {
+            throw new \InvalidArgumentException('Latitude and longitude parameters are required');
         }
     }
 

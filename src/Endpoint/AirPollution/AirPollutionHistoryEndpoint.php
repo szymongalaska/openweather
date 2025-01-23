@@ -14,7 +14,7 @@ use Bejblade\OpenWeather\Model\AirPollution;
 class AirPollutionHistoryEndpoint extends Endpoint implements LocationAwareEndpointInterface
 {
     /**
-     * @param array{lat:string, lon:int, start:string, end:string} $options Parameters to use in call
+     * @param array{lat:string, lon:int, start:string, end:string} $params Parameters to use in call
      * - `lat` - Latitude
      * - `lon` - Longitude
      * - `start` - Start date (unix time, UTC time zone)
@@ -22,9 +22,9 @@ class AirPollutionHistoryEndpoint extends Endpoint implements LocationAwareEndpo
      *
      * @return AirPollution[]
      */
-    public function call(array $options = []): array
+    public function call(array $params = []): array
     {
-        $response = $this->getResponse($options);
+        $response = $this->getResponse($params);
 
         return $this->convertResponseToAirPollutionArray($response['list']);
     }
@@ -44,16 +44,16 @@ class AirPollutionHistoryEndpoint extends Endpoint implements LocationAwareEndpo
     }
 
     /**
-     * @param array $options Parameters to use in call
+     * @param array $params Parameters to use in call
      * - `start` - Start date (unix time, UTC time zone)
      * - `end` - End date (unix time, UTC time zone)
      *
      * @return AirPollution[]
      */
-    public function callWithLocation(\Bejblade\OpenWeather\Model\Location $location, array $options = []): array
+    public function callWithLocation(\Bejblade\OpenWeather\Model\Location $location, array $params = []): array
     {
-        $options = array_merge(['lat' => $location->getLatitude(), 'lon' => $location->getLongitude()], $options);
-        return $this->call($options);
+        $params = array_merge(['lat' => $location->getLatitude(), 'lon' => $location->getLongitude()], $params);
+        return $this->call($params);
     }
 
     public function getEndpoint(): string
@@ -66,15 +66,15 @@ class AirPollutionHistoryEndpoint extends Endpoint implements LocationAwareEndpo
         return ['lat', 'lon', 'start', 'date'];
     }
 
-    protected function validate(array $options): void
+    protected function validate(array $params): void
     {
-        parent::validate($options);
+        parent::validate($params);
 
-        if ((!isset($options['lat']) || !isset($options['lon']))) {
-            throw new \InvalidArgumentException('Missing latitude and/or longitude parameter');
+        if ((!isset($params['lat']) || !isset($params['lon']))) {
+            throw new \InvalidArgumentException('Latitude and longitude parameters are required');
         }
 
-        if (!isset($options['start']) || !isset($options['end'])) {
+        if (!isset($params['start']) || !isset($params['end'])) {
             throw new \InvalidArgumentException('Missing date range');
         }
     }

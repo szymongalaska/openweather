@@ -14,27 +14,27 @@ use Bejblade\OpenWeather\Model\AirPollution;
 class AirPollutionEndpoint extends Endpoint implements LocationAwareEndpointInterface
 {
     /**
-     * @param array{lat:string, lon:int} $options Parameters to use in call
+     * @param array{lat:string, lon:int} $params Parameters to use in call
      * - `lat` - Latitude
      * - `lon` - Longitude
      *
      * @return AirPollution
      */
-    public function call(array $options = []): AirPollution
+    public function call(array $params = []): AirPollution
     {
-        $response = $this->getResponse($options);
+        $response = $this->getResponse($params);
 
         return new AirPollution($response['list'][0]);
     }
 
     /**
-     * @param array $options Not used in this endpoint
+     * @param array $params Not used in this endpoint
      * @return AirPollution
      */
-    public function callWithLocation(\Bejblade\OpenWeather\Model\Location $location, array $options = []): AirPollution
+    public function callWithLocation(\Bejblade\OpenWeather\Model\Location $location, array $params = []): AirPollution
     {
-        $options = array_merge(['lat' => $location->getLatitude(), 'lon' => $location->getLongitude()], $options);
-        return $this->call($options);
+        $params = array_merge(['lat' => $location->getLatitude(), 'lon' => $location->getLongitude()], $params);
+        return $this->call($params);
     }
 
     public function getEndpoint(): string
@@ -47,12 +47,17 @@ class AirPollutionEndpoint extends Endpoint implements LocationAwareEndpointInte
         return ['lat', 'lon'];
     }
 
-    protected function validate(array $options): void
+    /**
+     * @param array $params Parameters to validate
+     * @throws \InvalidArgumentException Thrown when required parameters are missing
+     * @return void
+     */
+    protected function validate(array $params): void
     {
-        parent::validate($options);
+        parent::validate($params);
 
-        if ((!isset($options['lat']) || !isset($options['lon']))) {
-            throw new \InvalidArgumentException('Missing latitude and/or longitude parameter');
+        if ((!isset($params['lat']) || !isset($params['lon']))) {
+            throw new \InvalidArgumentException('Latitude and longitude parameters are required');
         }
     }
 

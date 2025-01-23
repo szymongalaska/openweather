@@ -6,40 +6,64 @@ namespace Bejblade\OpenWeather\Model;
 
 use Bejblade\OpenWeather\OpenWeatherDate;
 
+/**
+ * Air pollution model
+ */
 class AirPollution
 {
-    /** @var OpenWeatherDate Date and time of last data calculation */
-    private OpenWeatherDate $lastUpdated;
+    /** Represents the timestamp of the last air pollution update. For forecasts, this property contains the date of the forecasted air pollution.
+     * @var OpenWeatherDate
+     */
+    private OpenWeatherDate $airPollutionTimestamp;
 
-    /** @var int Air Quality Index. Possible values: 1, 2, 3, 4, 5. Where 1 = Good, 5 = Very Poor */
+    /** Air Quality Index. Possible values: 1, 2, 3, 4, 5. Where 1 = Good, 5 = Very Poor
+     * @var int
+     */
     private int $aqi;
 
-    /** @var float Сoncentration of CO (Carbon monoxide), μg/m3 */
+    /** Сoncentration of CO (Carbon monoxide), μg/m3
+     * @var float
+     */
     private float $co;
 
-    /** @var float Сoncentration of NO (Nitrogen monoxide), μg/m3 */
+    /** Сoncentration of NO (Nitrogen monoxide), μg/m3
+     * @var float
+     */
     private float $no;
 
-    /** @var float Сoncentration of NO2 (Carbon dioxide), μg/m3 */
+    /** Сoncentration of NO2 (Carbon dioxide), μg/m3
+     * @var float
+     */
     private float $no2;
 
-    /** @var float Сoncentration of O3 (Ozone), μg/m3 */
+    /** Сoncentration of O3 (Ozone), μg/m3
+     * @var float
+     */
     private float $o3;
 
-    /** @var float Сoncentration of SO2 (Sulphur dioxide), μg/m3 */
+    /** Сoncentration of SO2 (Sulphur dioxide), μg/m3
+     * @var float
+     */
     private float $so2;
 
-    /** @var float Сoncentration of PM2.5 (Fine particles matter), μg/m3 */
+    /** Сoncentration of PM2.5 (Fine particles matter), μg/m3
+     * @var float
+     */
     private float $pm2_5;
 
-    /** @var float Сoncentration of PM10 (Coarse particulate matter), μg/m3 */
+    /** Сoncentration of PM10 (Coarse particulate matter), μg/m3
+     * @var float
+     */
     private float $pm10;
 
-    /** @var float Сoncentration of NH3 (Ammonia), μg/m3 */
+    /** Сoncentration of NH3 (Ammonia), μg/m3
+     * @var float
+     */
     private float $nh3;
+
     public function __construct(array $data)
     {
-        $this->lastUpdated = new OpenWeatherDate("@{$data['dt']}");
+        $this->airPollutionTimestamp = new OpenWeatherDate("@{$data['dt']}");
         $this->aqi = $data['main']['aqi'];
         $this->co = $data['components']['co'];
         $this->no = $data['components']['no'];
@@ -55,18 +79,18 @@ class AirPollution
      * Get last update time object
      * @return OpenWeatherDate
      */
-    public function getLastUpdated(): OpenWeatherDate
+    public function getTimestamp(): OpenWeatherDate
     {
-        return $this->lastUpdated;
+        return $this->airPollutionTimestamp;
     }
 
     /**
      * Get formatted date and time of last data calculation
      * @return string
      */
-    public function getLastUpdateTime(): string
+    public function getDate(): string
     {
-        return $this->lastUpdated->getFormatted();
+        return $this->airPollutionTimestamp->getFormatted();
     }
 
     /**
@@ -284,14 +308,14 @@ class AirPollution
     public function all(): array
     {
         return [
-            $this->co,
-            $this->no,
-            $this->no2,
-            $this->o3,
-            $this->so2,
-            $this->pm2_5,
-            $this->pm10,
-            $this->nh3
+            'co' => $this->co,
+            'no' => $this->no,
+            'no2' => $this->no2,
+            'o3' => $this->o3,
+            'so2' => $this->so2,
+            'pm2_5' => $this->pm2_5,
+            'pm10' => $this->pm10,
+            'nh3' => $this->nh3
         ];
     }
 }
