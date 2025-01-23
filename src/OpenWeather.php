@@ -38,6 +38,8 @@ class OpenWeather
      *
      * Set configuration, client and register endpoints
      * @param array $config Array with configuration parameters for Config class.
+     *
+     * {@see Config::configuration}
      */
     public function __construct(array $config = [])
     {
@@ -246,9 +248,9 @@ class OpenWeather
      * @param \Bejblade\OpenWeather\Model\Location $location Location for which data will be fetched
      * @param string $data Type of data to fetch. Available options: `current`, `minutely`, `hourly,` `daily`, `alerts`
      * @throws \InvalidArgumentException Thrown when invalid data option is provided
-     * @return Model\Weather|Model\Location|array
+     * @return Model\Weather|Model\Location|array|null
      */
-    public function getOneCallData(Model\Location $location, string $data): Model\Weather|Model\Location|array
+    public function getOneCallData(Model\Location $location, string $data): Model\Weather|Model\Location|array|null
     {
         $availableOptions = ['current', 'daily', 'hourly', 'minutely', 'alerts'];
         if (!in_array($data, $availableOptions)) {
@@ -257,7 +259,13 @@ class OpenWeather
 
         $exclude = array_diff($availableOptions, [$data]);
 
-        return $this->getEndpoint('onecall')->callWithLocation($location, ['exclude' => implode(',', $exclude)])[$data];
+        $result = $this->getEndpoint('onecall')->callWithLocation($location, ['exclude' => implode(',', $exclude)]);
+
+        if (!isset($result[$data])) {
+            return null;
+        }
+
+        return $result[$data];
     }
 
     /**
@@ -277,7 +285,7 @@ class OpenWeather
      * @param string $date Date in the `YYYY-MM-DD` format for which data is requested. Date is available for 46+ years archive (starting from 1979-01-02) up to the 1,5 years ahead forecast to the current date
      * @return Model\Weather
      */
-    public function getWeatherDailyAggregation(Model\Location $location, string $date = ''): Model\Weather
+    public function getWeatherDailyAggregation(Model\Location $location, string $date): Model\Weather
     {
         return $this->getEndpoint('onecall.aggregation')->callWithLocation($location, ['date' => $date]);
     }

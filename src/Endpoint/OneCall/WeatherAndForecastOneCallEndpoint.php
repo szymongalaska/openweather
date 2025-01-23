@@ -77,6 +77,8 @@ class WeatherAndForecastOneCallEndpoint extends OneCallEndpoint implements Locat
      */
     private function parseResponseData(array $data): array
     {
+        $parsedData = [];
+
         if (isset($data['current'])) {
             $data['current']['temperature'] = [
                 'temp' => $data['current']['temp'] ?? null,
@@ -94,7 +96,7 @@ class WeatherAndForecastOneCallEndpoint extends OneCallEndpoint implements Locat
 
             $data['current']['clouds'] = ['all' => $data['current']['clouds'] ?? null];
 
-            $parsedData['current'] = new Weather($data['current']);
+            $parsedData['current'] = new Weather($data['current'], $data['timezone_offset']);
         }
 
         if (isset($data['minutely'])) {
@@ -125,7 +127,7 @@ class WeatherAndForecastOneCallEndpoint extends OneCallEndpoint implements Locat
                 return $row;
             }, $data['hourly']);
 
-            $parsedData['hourly'] = new Forecast($data['hourly']);
+            $parsedData['hourly'] = new Forecast($data['hourly'], $data['timezone_offset']);
         }
 
         if (isset($data['daily'])) {
@@ -154,7 +156,7 @@ class WeatherAndForecastOneCallEndpoint extends OneCallEndpoint implements Locat
                 return $row;
             }, $data['daily']);
 
-            $parsedData['daily'] = new Forecast($data['daily']);
+            $parsedData['daily'] = new Forecast($data['daily'], $data['timezone_offset']);
         }
 
         return $parsedData;

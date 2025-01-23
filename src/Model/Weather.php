@@ -92,13 +92,18 @@ class Weather
      */
     private string $units;
 
-    public function __construct(array $data)
+    /**
+     * Weather constructor
+     * @param array $data Weather data
+     * @param  $timezone Timezone offset of weather data
+     */
+    public function __construct(array $data, int $timezone = 0)
     {
         $this->weather = $data['weather'][0]['main'] ?? null;
         $this->description = $data['weather'][0]['description'] ?? null;
         $this->icon = $data['weather'][0]['icon'] ?? null;
-        $this->sunrise = isset($data['sunrise']) ? new OpenWeatherDate("@{$data['sunrise']}") : null;
-        $this->sunset = isset($data['sunset']) ? new OpenWeatherDate("@{$data['sunset']}") : null;
+        $this->sunrise = isset($data['sunrise']) ? new OpenWeatherDate("@{$data['sunrise']}", $timezone) : null;
+        $this->sunset = isset($data['sunset']) ? new OpenWeatherDate("@{$data['sunset']}", $timezone) : null;
         $this->temperature = new Temperature($data['temperature']);
         $this->pressure = $data['main']['pressure'] ?? null;
         $this->humidity = $data['main']['humidity'] ?? null;
@@ -108,7 +113,7 @@ class Weather
         $this->rain = isset($data['rain']) ? $this->determinePrecipitation($data['rain']) : null;
         $this->snow = isset($data['snow']) ? $this->determinePrecipitation($data['snow']) : null;
         $this->probabilityOfPrecipitation = $data['pop'] ?? null;
-        $this->weatherTimestamp = new OpenWeatherDate("@{$data['dt']}");
+        $this->weatherTimestamp = new OpenWeatherDate("@{$data['dt']}", $timezone);
         $this->units = Config::configuration()->get('units');
     }
 

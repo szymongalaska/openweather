@@ -11,7 +11,8 @@ class WeatherTest extends BaseTestCase
     {
         parent::setUp();
         $this->weather = new Weather(
-            $this->fixture('weather')
+            $this->fixture('weather'),
+            $this->fixture('weather')['timezone']
         );
     }
 
@@ -23,7 +24,7 @@ class WeatherTest extends BaseTestCase
 
     public function test_get_last_update_time_returns_formatted_date(): void
     {
-        $this->assertSame('Wednesday/09/2024 11:59', $this->weather->getDate());
+        $this->assertSame('Wednesday/09/2024 13:59', $this->weather->getDate());
     }
 
     public function test_is_raining_returns_value(): void
@@ -43,7 +44,7 @@ class WeatherTest extends BaseTestCase
         $weatherFixture = $this->fixture('weather');
         $weatherFixture['dt'] = time();
 
-        $this->weather = new Weather($weatherFixture);
+        $this->weather = new Weather($weatherFixture, $weatherFixture['timezone']);
 
         $this->assertFalse($this->weather->isUpdateAvailable());
     }

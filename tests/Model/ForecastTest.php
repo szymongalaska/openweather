@@ -23,7 +23,8 @@ class ForecastTest extends BaseTestCase
         $this->weatherList = $weatherList;
 
         $this->forecast = new Forecast(
-            $weatherList
+            $weatherList,
+            $this->fixture('forecast')['city']['timezone']
         );
     }
 
@@ -37,14 +38,14 @@ class ForecastTest extends BaseTestCase
 
     public function test_get_forecast_for_tomorrow_returns_forecast_for_tomorrow(): void
     {
-        $tomorrowForecasts = new Forecast([$this->weatherList['2']]);
+        $tomorrowForecasts = new Forecast([$this->weatherList['2']], $this->fixture('forecast')['city']['timezone']);
 
         $this->assertEquals($tomorrowForecasts, $this->forecast->getForecastForTomorrow());
     }
 
     public function test_get_forecast_for_today_returns_forecast_for_today(): void
     {
-        $todayForecasts = new Forecast([$this->weatherList[0], $this->weatherList[1]]);
+        $todayForecasts = new Forecast([$this->weatherList[0], $this->weatherList[1]], $this->fixture('forecast')['city']['timezone']);
 
         $this->assertEquals($todayForecasts, $this->forecast->getForecastForToday());
     }
@@ -53,14 +54,14 @@ class ForecastTest extends BaseTestCase
     {
         $day = 1; // tomorrow
 
-        $tomorrowForecasts = new Forecast([$this->weatherList['2']]);
+        $tomorrowForecasts = new Forecast([$this->weatherList['2']], $this->fixture('forecast')['city']['timezone']);
 
         $this->assertEquals($tomorrowForecasts, $this->forecast->getWeatherForNext($day));
     }
 
     public function test_get_forecast_for_next_return_no_forecast(): void
     {
-        $this->forecast = new Forecast([$this->weatherList[0]]);
+        $this->forecast = new Forecast([$this->weatherList[0]], $this->fixture('forecast')['city']['timezone']);
         $this->assertFalse($this->forecast->getWeatherForNext(0));
     }
 
@@ -92,7 +93,7 @@ class ForecastTest extends BaseTestCase
             $weather['rain']['3h'] = 1;
             return $weather;
         }, $forecastFixture);
-        $this->forecast = new Forecast($forecastFixture);
+        $this->forecast = new Forecast($forecastFixture, $this->fixture('forecast')['city']['timezone']);
 
         $this->assertTrue($this->forecast->willItRain());
 
@@ -102,7 +103,7 @@ class ForecastTest extends BaseTestCase
             $weather['rain']['3h'] = 1;
             return $weather;
         }, $forecastFixture);
-        $this->forecast = new Forecast($forecastFixture);
+        $this->forecast = new Forecast($forecastFixture, $this->fixture('forecast')['city']['timezone']);
 
         $this->assertFalse($this->forecast->willItRain());
     }
@@ -115,7 +116,7 @@ class ForecastTest extends BaseTestCase
             $weather['snow']['3h'] = 1;
             return $weather;
         }, $forecastFixture);
-        $this->forecast = new Forecast($forecastFixture);
+        $this->forecast = new Forecast($forecastFixture, $this->fixture('forecast')['city']['timezone']);
 
         $this->assertTrue($this->forecast->willItSnow());
 
@@ -125,7 +126,7 @@ class ForecastTest extends BaseTestCase
             $weather['snow']['3h'] = 1;
             return $weather;
         }, $forecastFixture);
-        $this->forecast = new Forecast($forecastFixture);
+        $this->forecast = new Forecast($forecastFixture, $this->fixture('forecast')['city']['timezone']);
 
         $this->assertFalse($this->forecast->willItSnow());
     }

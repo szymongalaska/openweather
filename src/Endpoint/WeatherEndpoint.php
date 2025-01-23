@@ -27,7 +27,7 @@ class WeatherEndpoint extends Endpoint implements LocationAwareEndpointInterface
         $response = $this->getResponse($params);
         $response = $this->parseResponseData($response);
 
-        return new Weather($response);
+        return new Weather($response, $response['timezone']);
     }
 
     /**

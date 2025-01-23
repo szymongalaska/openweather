@@ -12,6 +12,8 @@ use Bejblade\OpenWeather\OpenWeatherDate;
 class AirPollution
 {
     /** Represents the timestamp of the last air pollution update. For forecasts, this property contains the date of the forecasted air pollution.
+     *
+     * Only available in configured timezone
      * @var OpenWeatherDate
      */
     private OpenWeatherDate $airPollutionTimestamp;

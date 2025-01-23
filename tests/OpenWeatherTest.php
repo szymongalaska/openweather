@@ -33,8 +33,8 @@ class OpenWeatherTest extends BaseTestCase
 
         $this->endpointMock = $this->createMock(LocationAwareEndpointInterface::class);
         $this->location = new Location($this->fixture('location'));
-        $this->weather = new Weather($this->fixture('weather'));
-        $this->forecast = new Forecast($this->fixture('forecast')['list']);
+        $this->weather = new Weather($this->fixture('weather'), $this->fixture('weather')['timezone']);
+        $this->forecast = new Forecast($this->fixture('forecast')['list'], $this->fixture('forecast')['city']['timezone']);
         $this->airPollution = new AirPollution($this->fixture('air_pollution'));
     }
 
@@ -88,7 +88,7 @@ class OpenWeatherTest extends BaseTestCase
     {
         $weatherFixture = $this->fixture('weather');
         $weatherFixture['dt'] = time();
-        $this->weather = new Weather($weatherFixture);
+        $this->weather = new Weather($weatherFixture, $weatherFixture['timezone']);
         $this->location->setWeather($this->weather);
 
         $this->endpointMock->expects($this->never())->method('callWithLocation');
@@ -104,7 +104,7 @@ class OpenWeatherTest extends BaseTestCase
     {
         $weatherFixture = $this->fixture('weather');
         $weatherFixture['dt'] -= 900;
-        $weather = new Weather($weatherFixture);
+        $weather = new Weather($weatherFixture, $weatherFixture['timezone']);
         $this->location->setWeather($weather);
 
         $this->endpointMock->expects($this->once())->method('callWithLocation')->with($this->location)->willReturn($this->weather);

@@ -23,9 +23,14 @@ class Forecast implements \Countable
      */
     private array $dateRange;
 
-    public function __construct(array $list)
+    /**
+     *
+     * @param array $list List of weather data
+     * @param int $timezone Timezone offset of weather data in seconds
+     */
+    public function __construct(array $list, int $timezone = 0)
     {
-        $this->collection = $this->createCollection($list);
+        $this->collection = $this->createCollection($list, $timezone);
         $this->dateRange = [
             'start' => reset($this->collection)->getTimestamp(),
             'end' => end($this->collection)->getTimestamp(),
@@ -52,14 +57,15 @@ class Forecast implements \Countable
 
     /**
      * Initialize collection as array of Weather[]
-     * @param array $list
+     * @param array $list List of weather data
+     * @param int $timezone Timezone offset of weather data in seconds
      * @return Weather[]
      */
-    private function createCollection(array $list): array
+    private function createCollection(array $list, int $timezone): array
     {
-        return array_map(function ($row) {
+        return array_map(function ($row) use ($timezone) {
             if (!$row instanceof Weather) {
-                return new Weather($row);
+                return new Weather($row, $timezone);
             }
 
             return $row;

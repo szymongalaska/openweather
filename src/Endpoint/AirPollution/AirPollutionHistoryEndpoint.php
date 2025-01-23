@@ -63,7 +63,7 @@ class AirPollutionHistoryEndpoint extends Endpoint implements LocationAwareEndpo
 
     protected function getAvailableOptions(): array
     {
-        return ['lat', 'lon', 'start', 'date'];
+        return ['lat', 'lon', 'start', 'end'];
     }
 
     protected function validate(array $params): void

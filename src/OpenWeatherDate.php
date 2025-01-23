@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Bejblade\OpenWeather;
 
-class OpenWeatherDate extends \DateTimeImmutable
+class OpenWeatherDate extends \DateTime
 {
     /**
      * Configuration defined format of date to use
@@ -12,12 +12,20 @@ class OpenWeatherDate extends \DateTimeImmutable
      */
     private string $dateFormat;
 
-    public function __construct(string $datetime)
+    public function __construct(string $datetime, int $timezone = 0)
     {
         $this->setDateFormat();
-        $timezone = new \DateTimeZone(Config::configuration()->get('timezone'));
+        if ($timezone == 0) {
+            $timezone = Config::configuration()->get('timezone');
+        } else {
+            $timezone = $timezone / 3600;
+            $timezone = $timezone > 0 ? '+' . $timezone : (string) $timezone;
+        }
 
-        parent::__construct($datetime, $timezone);
+        $timezone = new \DateTimeZone($timezone);
+        parent::__construct($datetime);
+        $this->setTimezone($timezone);
+
     }
 
     /**

@@ -26,7 +26,7 @@ class TimemachineOneCallEndpoint extends OneCallEndpoint implements LocationAwar
 
         $response = $this->getResponse($params);
 
-        return $this->parseResponseData($response['data'][0]);
+        return $this->parseResponseData($response['data'][0], $response['timezone_offset']);
     }
 
     /**
@@ -73,7 +73,7 @@ class TimemachineOneCallEndpoint extends OneCallEndpoint implements LocationAwar
      * @param array $data Response data to parse
      * @return Weather
      */
-    private function parseResponseData(array $data): Weather
+    private function parseResponseData(array $data, int $timezone): Weather
     {
         $data['temperature'] = [
             'temp' => $data['temp'] ?? null,
@@ -91,7 +91,7 @@ class TimemachineOneCallEndpoint extends OneCallEndpoint implements LocationAwar
 
         $data['clouds'] = ['all' => $data['clouds'] ?? null];
 
-        return new Weather($data);
+        return new Weather($data, $timezone);
     }
 
 }

@@ -37,7 +37,7 @@ class ForecastEndpoint extends Endpoint implements LocationAwareEndpointInterfac
 
         $response = $this->getResponse($params);
         $response['list'] = $this->parseResponseData($response['list']);
-        return new Forecast($response['list']);
+        return new Forecast($response['list'], $response['city']['timezone']);
     }
 
     /**
