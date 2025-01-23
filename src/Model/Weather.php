@@ -7,54 +7,89 @@ namespace Bejblade\OpenWeather\Model;
 use Bejblade\OpenWeather\OpenWeatherDate;
 use Bejblade\OpenWeather\Config;
 
+/**
+ * Weather model
+ */
 class Weather
 {
-    /** @var string|null Weather name */
+    /** Weather name
+     *  @var string|null
+     */
     private ?string $weather;
 
-    /** @var string|null Weather description */
+    /** Weather description
+     * @var string|null
+     */
     private ?string $description;
 
-    /** @var string|null Weather icon id */
+    /** Weather icon id
+     * @var string|null
+     */
     private ?string $icon;
 
-    /** @var OpenWeatherDate|null Sunrise time */
+    /** Sunrise time
+     * @var OpenWeatherDate|null
+     */
     private ?OpenWeatherDate $sunrise;
 
-    /** @var OpenWeatherDate|null Sunset time */
+    /** Sunset time
+     * @var OpenWeatherDate|null
+     */
     private ?OpenWeatherDate $sunset;
 
-    /** @var Temperature Current temperature data */
+    /** Temperature data
+     * @var Temperature
+     */
     private Temperature $temperature;
 
-    /** @var int|null Atmospheric pressure on the sea level in hPa */
+    /** Atmospheric pressure on the sea level in hPa
+     * @var int|null
+     */
     private ?int $pressure;
 
-    /** @var int|null Humidity in % */
+    /** Humidity in %
+     * @var int|null
+     */
     private ?int $humidity;
 
-    /** @var int|null Visibility in meters, maximum is 10km */
+    /** Visibility in meters, maximum is 10km
+     * @var int|null
+     */
     private ?int $visibility;
 
-    /** @var Wind|null Wind data of current weather */
+    /** Wind data of current weather
+     * @var Wind|null
+     */
     private ?Wind $wind;
 
-    /** @var int|null Cloudiness in % */
+    /** Cloudiness in %
+     * @var int|null
+     */
     private ?int $clouds;
 
-    /** @var float|null Precipitation of rain in mm/h */
+    /** Precipitation of rain in mm/h
+     * @var float|null
+     */
     private ?float $rain;
 
-    /** @var float|null Precipitation of snow in mm/h */
+    /** Precipitation of snow in mm/h
+     * @var float|null
+     */
     private ?float $snow;
 
-    /** @var float|null Probability of precipitation (only in forecast) */
+    /** Probability of precipitation (only in forecast)
+     * @var float|null
+     */
     private ?float $probabilityOfPrecipitation = null;
 
-    /** @var OpenWeatherDate and time of last data calculation */
-    private OpenWeatherDate $lastUpdated;
+    /** Represents the timestamp of the last weather update. For forecasts, this property contains the date of the forecasted weather.
+     * @var OpenWeatherDate
+     */
+    private OpenWeatherDate $weatherTimestamp;
 
-    /** @var string Units in which some of parameters are formatted */
+    /** Units in which some of parameters are formatted
+     * @var string
+     */
     private string $units;
 
     public function __construct(array $data)
@@ -73,7 +108,7 @@ class Weather
         $this->rain = isset($data['rain']) ? $this->determinePrecipitation($data['rain']) : null;
         $this->snow = isset($data['snow']) ? $this->determinePrecipitation($data['snow']) : null;
         $this->probabilityOfPrecipitation = $data['pop'] ?? null;
-        $this->lastUpdated = new OpenWeatherDate("@{$data['dt']}");
+        $this->weatherTimestamp = new OpenWeatherDate("@{$data['dt']}");
         $this->units = Config::configuration()->get('units');
     }
 
@@ -93,31 +128,35 @@ class Weather
 
     /**
      * Get weather name
-     * @return string
+     * @return string|null
      */
-    public function getWeather(): string
+    public function getWeather(): ?string
     {
         return $this->weather;
     }
 
     /**
      * Get weather description
-     * @return string
+     * @return string|null
      */
-    public function getDescription(): string
+    public function getDescription(): ?string
     {
         return $this->description;
     }
 
     /**
      * Get weather icon id
-     * @return string
+     * @return string|null
      */
-    public function getIcon(): string
+    public function getIcon(): ?string
     {
         return $this->icon;
     }
 
+    /**
+     * Get temperature data
+     * @return Temperature
+     */
     public function temperature(): Temperature
     {
         return $this->temperature;
@@ -125,45 +164,45 @@ class Weather
 
     /**
      * Get atmospheric pressure
-     * @return int
+     * @return int|null
      */
-    public function getPressure(): int
+    public function getPressure(): ?int
     {
         return $this->pressure;
     }
 
     /**
      * Get humidity
-     * @return int
+     * @return int|null
      */
-    public function getHumidity(): int
+    public function getHumidity(): ?int
     {
         return $this->humidity;
     }
 
     /**
      * Get visibility
-     * @return int
+     * @return int|null
      */
-    public function getVisibility(): int
+    public function getVisibility(): ?int
     {
         return $this->visibility;
     }
 
     /**
      * Get wind data
-     * @return Wind
+     * @return Wind|null
      */
-    public function wind(): Wind
+    public function wind(): ?Wind
     {
         return $this->wind;
     }
 
     /**
      * Get cloudiness
-     * @return int
+     * @return int|null
      */
-    public function getClouds(): int
+    public function getClouds(): ?int
     {
         return $this->clouds;
     }
@@ -199,18 +238,18 @@ class Weather
      * Get last update time object
      * @return OpenWeatherDate
      */
-    public function getLastUpdated(): OpenWeatherDate
+    public function getTimestamp(): OpenWeatherDate
     {
-        return $this->lastUpdated;
+        return $this->weatherTimestamp;
     }
 
     /**
      * Get formatted date and time of last data calculation
      * @return string
      */
-    public function getLastUpdateTime(): string
+    public function getDate(): string
     {
-        return $this->lastUpdated->getFormatted();
+        return $this->weatherTimestamp->getFormatted();
     }
 
     /**
@@ -246,7 +285,7 @@ class Weather
      */
     public function isUpdateAvailable(): bool
     {
-        $diff = abs((new \DateTime('now', $this->lastUpdated->getTimezone()))->getTimestamp() - $this->lastUpdated->getTimestamp());
+        $diff = abs((new \DateTime('now', $this->weatherTimestamp->getTimezone()))->getTimestamp() - $this->weatherTimestamp->getTimestamp());
 
         return $diff >= 600; // 10 minutes
     }
