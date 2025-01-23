@@ -40,7 +40,7 @@ final class Config
      */
     private function __construct(array $config = [])
     {
-        $defaultConfig = require __DIR__ . '/config/openweather.php';
+        $defaultConfig = require __DIR__ . '/../config/openweather.php';
 
         $this->config = array_merge($defaultConfig, $config);
 
