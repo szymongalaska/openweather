@@ -1,5 +1,15 @@
 {
     "name": "bejblade/open-weather",
+    "description": "A simple PHP wrapper for OpenWeatherMap API",
+    "keywords": ["openweathermap", "weather", "api"],
+    "authors": [
+        {
+            "name": "Szymon Gałąska",
+            "email": "szymon.galaska.9@gmail.com",
+            "homepage": "https://github.com/szymongalaska",
+            "role": "Developer"
+        }
+    ],
     "type": "library",
     "require": {
         "php": ">= 8.2",
