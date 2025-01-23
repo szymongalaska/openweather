@@ -10,7 +10,7 @@ use Bejblade\OpenWeather\OpenWeatherClient;
 
 /**
  * OpenWeather API
- * 
+ *
  * This class is used to interact with OpenWeather API
  */
 class OpenWeather
@@ -35,7 +35,7 @@ class OpenWeather
 
     /**
      * Initialize OpenWeather API
-     * 
+     *
      * Set configuration, client and register endpoints
      * @param array $config Array with configuration parameters for Config class.
      */
@@ -108,9 +108,9 @@ class OpenWeather
 
     /**
      * Get 5 day forecast for location
-     * 
+     *
      * Each day has 8 forecasts (every 3 hours)
-     * 
+     *
      * @param Model\Location $location Location for which forecast data will be fetched
      * @return Model\Forecast|null
      */
@@ -135,14 +135,14 @@ class OpenWeather
 
     /**
      * Find geolocation by location name
-     * 
+     *
      * Returns `Location` when `limit` is 1 or an array of `Location`
-     * 
+     *
      * @param string $cityName Name of the city to find
      * @param int $limit Response data limit. Default 1.
      * @param string|null $stateCode Only available when country code is 'US'
      * @param string|null $countryCode ISO 3166 country code
-     * 
+     *
      * @return Model\Location|Model\Location[]
      */
     public function findLocationByName(string $cityName, int $limit = 1, ?string $stateCode = null, ?string $countryCode = null): Model\Location|array
@@ -170,13 +170,13 @@ class OpenWeather
 
     /**
      * Find geolocation by coordinates
-     * 
+     *
      * Returns `Location` when `limit` is 1 or an array of `Location`
-     * 
+     *
      * @param string $lat Latitude
      * @param string $lon Longitude
      * @param int $limit Response data limit. Default 1.
-     * 
+     *
      * @return Model\Location|Model\Location[]
      */
     public function findLocationByCoords(string $lat, string $lon, int $limit = 1): Model\Location|array
@@ -192,7 +192,7 @@ class OpenWeather
     public function getAirPollution(Model\Location $location): Model\AirPollution|null
     {
         $location->setAirPollution($this->getEndpoint('air.pollution')->callWithLocation($location));
-        return $location->getAirPollution();
+        return $location->airPollution();
     }
 
     /**
@@ -251,8 +251,9 @@ class OpenWeather
     public function getOneCallData(Model\Location $location, string $data): Model\Weather|Model\Location|array
     {
         $availableOptions = ['current', 'daily', 'hourly', 'minutely', 'alerts'];
-        if (!in_array($data, $availableOptions))
+        if (!in_array($data, $availableOptions)) {
             throw new \InvalidArgumentException('Invalid data option. Available options: ' . implode(', ', $availableOptions));
+        }
 
         $exclude = array_diff($availableOptions, [$data]);
 
@@ -287,7 +288,7 @@ class OpenWeather
      * @param string $timestamp Timestamp in the `UNIX` format for which data is requested. Timestamp is available for 1st January 1979 till 4 days ahead forecast
      * @return Model\Weather
      */
-    public function getWeatherTimemachine(Model\Location $location, string $timestamp): Model\Weather
+    public function getWeatherTimeMachine(Model\Location $location, string $timestamp): Model\Weather
     {
         return $this->getEndpoint('onecall.timemachine')->callWithLocation($location, ['dt' => $timestamp]);
     }

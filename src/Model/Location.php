@@ -165,7 +165,7 @@ class Location
      * Get air pollution object
      * @return AirPollution|null
      */
-    public function getAirPollution(): ?AirPollution
+    public function airPollution(): ?AirPollution
     {
         return $this->airPollution;
     }
