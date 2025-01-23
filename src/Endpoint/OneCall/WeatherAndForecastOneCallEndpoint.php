@@ -101,6 +101,10 @@ class WeatherAndForecastOneCallEndpoint extends OneCallEndpoint implements Locat
             $parsedData['minutely'] = $data['minutely'];
         }
 
+        if (isset($data['alerts'])) {
+            $parsedData['alerts'] = $data['alerts'];
+        }
+
         if (isset($data['hourly'])) {
             $data['hourly'] = array_map(function ($row) {
                 $row['temperature'] = [
