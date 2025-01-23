@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Bejblade\OpenWeather\Model;
+namespace Bejblade\OpenWeather\Entity;
 
-use Bejblade\OpenWeather\Model\Forecast;
+use Bejblade\OpenWeather\Entity\Forecast;
 
 /**
- * Location model
+ * Location entity
  */
 class Location
 {

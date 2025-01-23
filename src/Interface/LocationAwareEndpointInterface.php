@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Bejblade\OpenWeather\Interface;
 
-use Bejblade\OpenWeather\Model\Location;
+use Bejblade\OpenWeather\Entity\Location;
 
 /**
  * Endpoint interface for calling API with Location objects

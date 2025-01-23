@@ -6,7 +6,7 @@ namespace Bejblade\OpenWeather\Endpoint\AirPollution;
 
 use Bejblade\OpenWeather\Endpoint\Endpoint;
 use Bejblade\OpenWeather\Interface\LocationAwareEndpointInterface;
-use Bejblade\OpenWeather\Model\AirPollution;
+use Bejblade\OpenWeather\Entity\AirPollution;
 
 /**
  * Air pollution history endpoint. Get historical air pollution data for any coordinates on the globe (accessible from 27th November 2020).
@@ -32,7 +32,7 @@ class AirPollutionHistoryEndpoint extends Endpoint implements LocationAwareEndpo
     /**
      * Convert Air Pollution Forecast response to AirPollution list
      * @param array $response Array of air pollution data
-     * @return \Bejblade\OpenWeather\Model\AirPollution[]
+     * @return \Bejblade\OpenWeather\Entity\AirPollution[]
      */
     private function convertResponseToAirPollutionArray(array $airPollutionList): array
     {
@@ -50,7 +50,7 @@ class AirPollutionHistoryEndpoint extends Endpoint implements LocationAwareEndpo
      *
      * @return AirPollution[]
      */
-    public function callWithLocation(\Bejblade\OpenWeather\Model\Location $location, array $params = []): array
+    public function callWithLocation(\Bejblade\OpenWeather\Entity\Location $location, array $params = []): array
     {
         $params = array_merge(['lat' => $location->getLatitude(), 'lon' => $location->getLongitude()], $params);
         return $this->call($params);

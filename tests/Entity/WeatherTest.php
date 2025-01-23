@@ -2,7 +2,7 @@
 
 namespace Tests;
 
-use Bejblade\OpenWeather\Model\Weather;
+use Bejblade\OpenWeather\Entity\Weather;
 
 class WeatherTest extends BaseTestCase
 {

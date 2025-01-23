@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Bejblade\OpenWeather\Endpoint\OneCall;
 
 use Bejblade\OpenWeather\Interface\LocationAwareEndpointInterface;
-use Bejblade\OpenWeather\Model\Weather;
+use Bejblade\OpenWeather\Entity\Weather;
 
 /**
  * Get weather data for any timestamp from 1st January 1979 till 4 days ahead forecast
@@ -35,7 +35,7 @@ class TimemachineOneCallEndpoint extends OneCallEndpoint implements LocationAwar
      *
      * @return Weather
      */
-    public function callWithLocation(\Bejblade\OpenWeather\Model\Location $location, array $params = []): Weather
+    public function callWithLocation(\Bejblade\OpenWeather\Entity\Location $location, array $params = []): Weather
     {
         $params = array_merge(['lat' => $location->getLatitude(), 'lon' => $location->getLongitude()], $params);
         return $this->call($params);

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Bejblade\OpenWeather\Endpoint\Geocoding;
 
-use Bejblade\OpenWeather\Model\Location;
+use Bejblade\OpenWeather\Entity\Location;
 
 /**
  * Zip Geocoding endpoint. Fetch Location data by zip code, country code

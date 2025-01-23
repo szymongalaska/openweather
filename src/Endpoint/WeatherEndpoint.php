@@ -6,7 +6,7 @@ namespace Bejblade\OpenWeather\Endpoint;
 
 use Bejblade\OpenWeather\Endpoint\Endpoint;
 use Bejblade\OpenWeather\Interface\LocationAwareEndpointInterface;
-use Bejblade\OpenWeather\Model\Weather;
+use Bejblade\OpenWeather\Entity\Weather;
 
 /**
  * Weather endpoint. Fetch current weather data by `Location` or latitude and longitude
@@ -31,12 +31,12 @@ class WeatherEndpoint extends Endpoint implements LocationAwareEndpointInterface
     }
 
     /**
-     * Make a call to API endpoint using Location model
-     * @param \Bejblade\OpenWeather\Model\Location $location Location for which weather data will be fetched
+     * Make a call to API endpoint using Location entity
+     * @param \Bejblade\OpenWeather\Entity\Location $location Location for which weather data will be fetched
      * @param array $params Not used in this endpoint
      * @return Weather
      */
-    public function callWithLocation(\Bejblade\OpenWeather\Model\Location $location, array $params = []): Weather
+    public function callWithLocation(\Bejblade\OpenWeather\Entity\Location $location, array $params = []): Weather
     {
         return $this->call(['lat' => $location->getLatitude(), 'lon' => $location->getLongitude()]);
     }

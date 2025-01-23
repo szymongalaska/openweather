@@ -6,7 +6,7 @@ namespace Bejblade\OpenWeather\Endpoint\AirPollution;
 
 use Bejblade\OpenWeather\Endpoint\Endpoint;
 use Bejblade\OpenWeather\Interface\LocationAwareEndpointInterface;
-use Bejblade\OpenWeather\Model\AirPollution;
+use Bejblade\OpenWeather\Entity\AirPollution;
 
 /**
  * Air pollution endpoint. Get current air pollution data for any coordinates on the globe
@@ -31,7 +31,7 @@ class AirPollutionEndpoint extends Endpoint implements LocationAwareEndpointInte
      * @param array $params Not used in this endpoint
      * @return AirPollution
      */
-    public function callWithLocation(\Bejblade\OpenWeather\Model\Location $location, array $params = []): AirPollution
+    public function callWithLocation(\Bejblade\OpenWeather\Entity\Location $location, array $params = []): AirPollution
     {
         $params = array_merge(['lat' => $location->getLatitude(), 'lon' => $location->getLongitude()], $params);
         return $this->call($params);

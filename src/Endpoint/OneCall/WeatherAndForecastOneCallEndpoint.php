@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Bejblade\OpenWeather\Endpoint\OneCall;
 
 use Bejblade\OpenWeather\Interface\LocationAwareEndpointInterface;
-use Bejblade\OpenWeather\Model\Weather;
-use Bejblade\OpenWeather\Model\Forecast;
+use Bejblade\OpenWeather\Entity\Weather;
+use Bejblade\OpenWeather\Entity\Forecast;
 
 /**
  * Get current weather, minute forecast for 1 hour, hourly forecast for 48 hours, daily forecast for 8 days and government weather alerts data in with just one call
@@ -45,7 +45,7 @@ class WeatherAndForecastOneCallEndpoint extends OneCallEndpoint implements Locat
      *
      * @return array
      */
-    public function callWithLocation(\Bejblade\OpenWeather\Model\Location $location, array $params = []): array
+    public function callWithLocation(\Bejblade\OpenWeather\Entity\Location $location, array $params = []): array
     {
         $params = array_merge(['lat' => $location->getLatitude(), 'lon' => $location->getLongitude()], $params);
         return $this->call($params);

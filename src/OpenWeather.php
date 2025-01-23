@@ -96,10 +96,10 @@ class OpenWeather
 
     /**
      * Get weather data by location
-     * @param Model\Location $location Location for which weather data will be fetched
-     * @return Model\Weather
+     * @param Entity\Location $location Location for which weather data will be fetched
+     * @return Entity\Weather
      */
-    public function getWeather(Model\Location $location): Model\Weather|null
+    public function getWeather(Entity\Location $location): Entity\Weather|null
     {
         if (!$location->hasWeather() || $location->weather()->isUpdateAvailable()) {
             $location->setWeather($this->getEndpoint('weather')->callWithLocation($location));
@@ -113,10 +113,10 @@ class OpenWeather
      *
      * Each day has 8 forecasts (every 3 hours)
      *
-     * @param Model\Location $location Location for which forecast data will be fetched
-     * @return Model\Forecast|null
+     * @param Entity\Location $location Location for which forecast data will be fetched
+     * @return Entity\Forecast|null
      */
-    public function getForecast(Model\Location $location): Model\Forecast|null
+    public function getForecast(Entity\Location $location): Entity\Forecast|null
     {
         $location->setForecast($this->getEndpoint('forecast')->callWithLocation($location));
         return $location->forecast();
@@ -124,10 +124,10 @@ class OpenWeather
 
     /**
      * Get all data for location (weather, forecast and air pollution)
-     * @param Model\Location $location Location for which weather and forecast data will be fetched
-     * @return Model\Location
+     * @param Entity\Location $location Location for which weather and forecast data will be fetched
+     * @return Entity\Location
      */
-    public function getAllData(Model\Location $location): Model\Location
+    public function getAllData(Entity\Location $location): Entity\Location
     {
         $this->getWeather($location);
         $this->getForecast($location);
@@ -145,9 +145,9 @@ class OpenWeather
      * @param string|null $stateCode Only available when country code is 'US'
      * @param string|null $countryCode ISO 3166 country code
      *
-     * @return Model\Location|Model\Location[]
+     * @return Entity\Location|Entity\Location[]
      */
-    public function findLocationByName(string $cityName, int $limit = 1, ?string $stateCode = null, ?string $countryCode = null): Model\Location|array
+    public function findLocationByName(string $cityName, int $limit = 1, ?string $stateCode = null, ?string $countryCode = null): Entity\Location|array
     {
         $query = implode(',', array_filter([$cityName, $stateCode, $countryCode]));
         $result = $this->getEndpoint('geo.direct')->call(['q' => $query, 'limit' => $limit]);
@@ -163,9 +163,9 @@ class OpenWeather
      * Find geolocation by zip code
      * @param string $zipCode Zip code of the location
      * @param string $countryCode ISO 3166 country code
-     * @return Model\Location
+     * @return Entity\Location
      */
-    public function findLocationByZipCode(string $zipCode, string $countryCode): Model\Location
+    public function findLocationByZipCode(string $zipCode, string $countryCode): Entity\Location
     {
         return $this->getEndpoint('geo.zip')->call(['zip' => $zipCode . ',' . $countryCode]);
     }
@@ -179,19 +179,19 @@ class OpenWeather
      * @param string $lon Longitude
      * @param int $limit Response data limit. Default 1.
      *
-     * @return Model\Location|Model\Location[]
+     * @return Entity\Location|Entity\Location[]
      */
-    public function findLocationByCoords(string $lat, string $lon, int $limit = 1): Model\Location|array
+    public function findLocationByCoords(string $lat, string $lon, int $limit = 1): Entity\Location|array
     {
         return $this->getEndpoint('geo.reverse')->call(['lat' => $lat, 'lon' => $lon, 'limit' => $limit]);
     }
 
     /**
      * Get air pollution by location
-     * @param Model\Location $location Location for which air pollution data will be fetched
-     * @return Model\AirPollution|null
+     * @param Entity\Location $location Location for which air pollution data will be fetched
+     * @return Entity\AirPollution|null
      */
-    public function getAirPollution(Model\Location $location): Model\AirPollution|null
+    public function getAirPollution(Entity\Location $location): Entity\AirPollution|null
     {
         $location->setAirPollution($this->getEndpoint('air.pollution')->callWithLocation($location));
         return $location->airPollution();
@@ -199,32 +199,32 @@ class OpenWeather
 
     /**
      * Get air pollution forecast by location
-     * @param Model\Location $location Location for which air pollution data will be fetched
-     * @return Model\AirPollution[]
+     * @param Entity\Location $location Location for which air pollution data will be fetched
+     * @return Entity\AirPollution[]
      */
-    public function getAirPollutionForecast(Model\Location $location): array
+    public function getAirPollutionForecast(Entity\Location $location): array
     {
         return $this->getEndpoint('air.forecast')->callWithLocation($location);
     }
 
     /**
      * Get air pollution history by location
-     * @param Model\Location $location Location for which air pollution data will be fetched
+     * @param Entity\Location $location Location for which air pollution data will be fetched
      * @param string $start Start date (unix time, UTC time zone)
      * @param string $end End date (unix time, UTC time zone)
-     * @return Model\AirPollution[]
+     * @return Entity\AirPollution[]
      */
-    public function getAirPollutionHistory(Model\Location $location, string $start, string $end): array
+    public function getAirPollutionHistory(Entity\Location $location, string $start, string $end): array
     {
         return $this->getEndpoint('air.history')->callWithLocation($location, ['start' => $start, 'end' => $end]);
     }
 
     /**
      * Get current weather and 8 days forecast by location using One Call API
-     * @param \Bejblade\OpenWeather\Model\Location $location Location for which weather and forecast data will be fetched
-     * @return array{current:Model\Weather, daily:Model\Forecast[]}
+     * @param \Bejblade\OpenWeather\Entity\Location $location Location for which weather and forecast data will be fetched
+     * @return array{current:Entity\Weather, daily:Entity\Forecast[]}
      */
-    public function getOneCallWeatherAndForecast(Model\Location $location): array
+    public function getOneCallWeatherAndForecast(Entity\Location $location): array
     {
         $result = $this->getEndpoint('onecall')->callWithLocation($location, ['exclude' => 'minutely,hourly,alerts']);
         $location->setWeather($result['current']);
@@ -235,22 +235,22 @@ class OpenWeather
 
     /**
      * Get all data using One Call API
-     * @param \Bejblade\OpenWeather\Model\Location $location Location for which data will be fetched
-     * @return array{current:Model\Weather, daily:Model\Forecast[], hourly:Model\Forecast[], minutely:array, alerts:array}
+     * @param \Bejblade\OpenWeather\Entity\Location $location Location for which data will be fetched
+     * @return array{current:Entity\Weather, daily:Entity\Forecast[], hourly:Entity\Forecast[], minutely:array, alerts:array}
      */
-    public function getOneCallAllData(Model\Location $location): array
+    public function getOneCallAllData(Entity\Location $location): array
     {
         return $this->getEndpoint('onecall')->callWithLocation($location);
     }
 
     /**
      * Get specific data using One Call API
-     * @param \Bejblade\OpenWeather\Model\Location $location Location for which data will be fetched
+     * @param \Bejblade\OpenWeather\Entity\Location $location Location for which data will be fetched
      * @param string $data Type of data to fetch. Available options: `current`, `minutely`, `hourly,` `daily`, `alerts`
      * @throws \InvalidArgumentException Thrown when invalid data option is provided
-     * @return Model\Weather|Model\Location|array|null
+     * @return Entity\Weather|Entity\Location|array|null
      */
-    public function getOneCallData(Model\Location $location, string $data): Model\Weather|Model\Location|array|null
+    public function getOneCallData(Entity\Location $location, string $data): Entity\Weather|Entity\Location|array|null
     {
         $availableOptions = ['current', 'daily', 'hourly', 'minutely', 'alerts'];
         if (!in_array($data, $availableOptions)) {
@@ -270,44 +270,44 @@ class OpenWeather
 
     /**
      * Get specific data using One Call API excluding some of it
-     * @param \Bejblade\OpenWeather\Model\Location $location Location for which data will be fetched
+     * @param \Bejblade\OpenWeather\Entity\Location $location Location for which data will be fetched
      * @param string $exclude Data to exclude. Available options: `current`, `minutely`, `hourly,` `daily`, `alerts`
      * @return array
      */
-    public function getOneCallDataExcept(Model\Location $location, string $exclude): array
+    public function getOneCallDataExcept(Entity\Location $location, string $exclude): array
     {
         return $this->getEndpoint('onecall')->callWithLocation($location, ['exclude' => $exclude]);
     }
 
     /**
      * Get aggregated weather data using One Call API
-     * @param \Bejblade\OpenWeather\Model\Location $location Location for which weather data will be fetched
+     * @param \Bejblade\OpenWeather\Entity\Location $location Location for which weather data will be fetched
      * @param string $date Date in the `YYYY-MM-DD` format for which data is requested. Date is available for 46+ years archive (starting from 1979-01-02) up to the 1,5 years ahead forecast to the current date
-     * @return Model\Weather
+     * @return Entity\Weather
      */
-    public function getWeatherDailyAggregation(Model\Location $location, string $date): Model\Weather
+    public function getWeatherDailyAggregation(Entity\Location $location, string $date): Entity\Weather
     {
         return $this->getEndpoint('onecall.aggregation')->callWithLocation($location, ['date' => $date]);
     }
 
     /**
      * Get weather data for any timestamp from 1st January 1979 till 4 days ahead forecast using One Call API
-     * @param \Bejblade\OpenWeather\Model\Location $location Location for which weather data will be fetched
+     * @param \Bejblade\OpenWeather\Entity\Location $location Location for which weather data will be fetched
      * @param string $timestamp Timestamp in the `UNIX` format for which data is requested. Timestamp is available for 1st January 1979 till 4 days ahead forecast
-     * @return Model\Weather
+     * @return Entity\Weather
      */
-    public function getWeatherTimeMachine(Model\Location $location, string $timestamp): Model\Weather
+    public function getWeatherTimeMachine(Entity\Location $location, string $timestamp): Entity\Weather
     {
         return $this->getEndpoint('onecall.timemachine')->callWithLocation($location, ['dt' => $timestamp]);
     }
 
     /**
      * Get weather overview using One Call API
-     * @param Model\Location $location Location for which weather data will be fetched
+     * @param Entity\Location $location Location for which weather data will be fetched
      * @param string $date The date of weather summary in YYYY-MM-DD format. Data is available for today and tomorrow. If not specified, the current date will be used by default. Please note that the date is determined by the timezone relevant to the coordinates specified in the API request
      * @return string
      */
-    public function getWeatherOverview(Model\Location $location, string $date = ''): string
+    public function getWeatherOverview(Entity\Location $location, string $date = ''): string
     {
         return $this->getEndpoint('onecall.overview')->callWithLocation($location, ['date' => $date]);
     }

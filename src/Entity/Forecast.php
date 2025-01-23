@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Bejblade\OpenWeather\Model;
+namespace Bejblade\OpenWeather\Entity;
 
 use Bejblade\OpenWeather\Exception\UnsupportedFieldTypeException;
 
 /**
- * Forecast model
+ * Forecast entity
  */
 class Forecast implements \Countable
 {

@@ -6,7 +6,7 @@ namespace Bejblade\OpenWeather\Endpoint;
 
 use Bejblade\OpenWeather\Endpoint\Endpoint;
 use Bejblade\OpenWeather\Interface\LocationAwareEndpointInterface;
-use Bejblade\OpenWeather\Model\Forecast;
+use Bejblade\OpenWeather\Entity\Forecast;
 
 /**
  * Forecast endpoint. Fetch 5 day forecast data for any location
@@ -41,15 +41,15 @@ class ForecastEndpoint extends Endpoint implements LocationAwareEndpointInterfac
     }
 
     /**
-     * Make a call to API endpoint using Location model
+     * Make a call to API endpoint using Location entity
      *
-     * @param \Bejblade\OpenWeather\Model\Location $location Location for which weather data will be fetched
+     * @param \Bejblade\OpenWeather\Entity\Location $location Location for which weather data will be fetched
      * @param array $params Parameters to use in call
      * - cnt - Number of forecasts which will be returned in the API response
      *
      * @return Forecast
      */
-    public function callWithLocation(\Bejblade\OpenWeather\Model\Location $location, array $params = []): Forecast
+    public function callWithLocation(\Bejblade\OpenWeather\Entity\Location $location, array $params = []): Forecast
     {
         $params = array_merge(['lat' => $location->getLatitude(), 'lon' => $location->getLongitude()], $params);
         return $this->call($params);

@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Bejblade\OpenWeather\Model;
+namespace Bejblade\OpenWeather\Entity;
 
 use Bejblade\OpenWeather\OpenWeatherDate;
 use Bejblade\OpenWeather\Config;
 
 /**
- * Weather model
+ * Weather entity
  */
 class Weather
 {

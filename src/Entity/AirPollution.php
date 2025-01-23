@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Bejblade\OpenWeather\Model;
+namespace Bejblade\OpenWeather\Entity;
 
 use Bejblade\OpenWeather\OpenWeatherDate;
 
 /**
- * Air pollution model
+ * Air pollution entity
  */
 class AirPollution
 {

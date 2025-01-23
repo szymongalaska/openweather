@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Bejblade\OpenWeather\Endpoint\Geocoding;
 
-use Bejblade\OpenWeather\Model\Location;
+use Bejblade\OpenWeather\Entity\Location;
 use Bejblade\OpenWeather\Config;
 
 /**

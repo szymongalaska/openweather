@@ -2,7 +2,7 @@
 
 namespace Tests;
 
-use Bejblade\OpenWeather\Model\AirPollution;
+use Bejblade\OpenWeather\Entity\AirPollution;
 
 class AirPollutionTest extends BaseTestCase
 {

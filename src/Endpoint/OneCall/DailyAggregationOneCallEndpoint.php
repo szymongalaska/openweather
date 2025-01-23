@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Bejblade\OpenWeather\Endpoint\OneCall;
 
 use Bejblade\OpenWeather\Interface\LocationAwareEndpointInterface;
-use Bejblade\OpenWeather\Model\Weather;
+use Bejblade\OpenWeather\Entity\Weather;
 
 /**
  * Get aggregated weather data for a particular date from 2nd January 1979 till long-term forecast for 1,5 years ahead
@@ -35,7 +35,7 @@ class DailyAggregationOneCallEndpoint extends OneCallEndpoint implements Locatio
      *
      * @return Weather
      */
-    public function callWithLocation(\Bejblade\OpenWeather\Model\Location $location, array $params = []): Weather
+    public function callWithLocation(\Bejblade\OpenWeather\Entity\Location $location, array $params = []): Weather
     {
         $params = array_merge(['lat' => $location->getLatitude(), 'lon' => $location->getLongitude()], $params);
         return $this->call($params);

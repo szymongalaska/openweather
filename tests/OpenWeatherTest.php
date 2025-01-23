@@ -4,10 +4,10 @@ namespace Tests;
 
 use Bejblade\OpenWeather\Interface\LocationAwareEndpointInterface;
 use Bejblade\OpenWeather\OpenWeather;
-use Bejblade\OpenWeather\Model\Location;
-use Bejblade\OpenWeather\Model\Weather;
-use Bejblade\OpenWeather\Model\Forecast;
-use Bejblade\OpenWeather\Model\AirPollution;
+use Bejblade\OpenWeather\Entity\Location;
+use Bejblade\OpenWeather\Entity\Weather;
+use Bejblade\OpenWeather\Entity\Forecast;
+use Bejblade\OpenWeather\Entity\AirPollution;
 
 class OpenWeatherTest extends BaseTestCase
 {

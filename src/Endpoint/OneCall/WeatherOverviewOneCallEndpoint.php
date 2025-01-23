@@ -34,7 +34,7 @@ class WeatherOverviewOneCallEndpoint extends OneCallEndpoint implements Location
      *
      * @return string
      */
-    public function callWithLocation(\Bejblade\OpenWeather\Model\Location $location, array $params = []): string
+    public function callWithLocation(\Bejblade\OpenWeather\Entity\Location $location, array $params = []): string
     {
         $params = array_merge(['lat' => $location->getLatitude(), 'lon' => $location->getLongitude()], $params);
         return $this->call($params);

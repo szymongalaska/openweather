@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Bejblade\OpenWeather\Model;
+namespace Bejblade\OpenWeather\Entity;
 
 use Bejblade\OpenWeather\Config;
 
 /**
- * Temperature model
+ * Temperature entity
  */
 class Temperature
 {
