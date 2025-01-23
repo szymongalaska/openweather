@@ -2,13 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Bejblade\OpenWeather\Model\Collection;
+namespace Bejblade\OpenWeather\Model;
 
-use Bejblade\OpenWeather\Model\Weather;
-use Bejblade\OpenWeather\Model\Temperature;
 use Bejblade\OpenWeather\Exception\UnsupportedFieldTypeException;
 
-class WeatherCollection implements \Countable
+class Forecast implements \Countable
 {
     /**
      * Collection of weather
@@ -16,9 +14,19 @@ class WeatherCollection implements \Countable
      */
     private array $collection = [];
 
+    /**
+     * Array that stores date of first and last element in collection
+     * @var array{start:\DateTimeInterface, end:\DateTimeInterface}
+     */
+    private array $dateRange;
+
     public function __construct(array $list)
     {
         $this->collection = $this->createCollection($list);
+        $this->dateRange = [
+            'start' => reset($this->collection)->getTimestamp(),
+            'end' => end($this->collection)->getTimestamp(),
+        ];
     }
 
     /**
@@ -30,6 +38,10 @@ class WeatherCollection implements \Countable
         return $this->collection;
     }
 
+    /**
+     * Count elements of collection
+     * @return int
+     */
     public function count(): int
     {
         return count($this->collection);
@@ -52,53 +64,59 @@ class WeatherCollection implements \Countable
     }
 
     /**
-     * Get the forecast for the rest of the day
-     * @return WeatherCollection|bool
+     * Get the number of days between `dateRange` 
+     * @return int
      */
-    public function getForecastForToday(): WeatherCollection|bool
+    private function numberOfDays(): int
+    {
+        return abs((int) $this->dateRange['start']->format('d') - (int) $this->dateRange['end']->format('d'));
+    }
+
+    /**
+     * Get forecast for the rest of the day
+     * @return Forecast|bool
+     */
+    public function getForecastForToday(): Forecast|bool
     {
         return $this->getWeatherForDay();
     }
 
     /**
-     * Get the forecast for tomorrow
-     * @return WeatherCollection|bool
+     * Get forecast for tomorrow
+     * @return Forecast|bool
      */
-    public function getForecastForTomorrow(): WeatherCollection|bool
+    public function getForecastForTomorrow(): Forecast|bool
     {
         return $this->getWeatherForDay(1);
     }
 
     /**
-     * Get forecast for a specific day. Returns false if there is no forcast for that day or current forecast is the same. The furthest day you can check is 5
-     * @param int $day
-     * @return WeatherCollection|bool
+     * Get forecast for a specific day. Returns false if there is no forcast for that day or current forecast is the same.
+     * @param int $day The number of days that have passed since the start in `dateRange`. Default 0 (start date)
+     * @return Forecast|bool
      */
-    public function getWeatherForNext(int $day): WeatherCollection|bool
+    public function getWeatherForNext(int $day): Forecast|bool
     {
         return $this->getWeatherForDay($day);
     }
 
     /**
-     * Get forecast for a specific day. Returns false if there is no forcast for that day or current forecast is the same. The furthest day you can check is 5
-     * @param int $day
-     * @throws \InvalidArgumentException
-     * @return WeatherCollection|bool
+     * Get forecast for a specific day. Returns false if there is no forcast for that day or current forecast is the same.
+     * @param int $day The number of days that have passed since the start in `dateRange`. Default 0 (start date)
+     * @throws \OutOfRangeException Thrown when argument `day` is less than 0 or more than number of days between first and last elements of collection
+     * @return Forecast|bool
      */
-    private function getWeatherForDay(int $day = 0): WeatherCollection|bool
+    private function getWeatherForDay(int $day = 0): Forecast|bool
     {
-        if ($day == 0) {
-            $date = new \DateTime();
-        } elseif ($day <= 5) {
-            $date = new \DateTime("+{$day} day");
-        } else {
-            throw new \InvalidArgumentException('');
-        }
+        if ($day < 0 || $day > $this->numberOfDays())
+            throw new \OutOfRangeException("Data for requested day is not available");
+
+        $date = new \DateTime("+{$day} day");
 
         $forecasts = [];
 
         foreach ($this->collection as $weather) {
-            if ($weather->getLastUpdated()->isSameDay($date)) {
+            if ($weather->getTimestamp()->isSameDay($date)) {
                 $forecasts[] = $weather;
             }
         }
@@ -123,6 +141,7 @@ class WeatherCollection implements \Countable
      * - clouds
      *
      * @throws \InvalidArgumentException Thrown when property value cannot be calculated or property does not exist
+     * @throws UnsupportedFieldTypeException Thrown when `feelsLike` property is an instance of `Temperature`
      * @return float|null
      */
     private function getAverage(string $property): float|null
@@ -164,8 +183,8 @@ class WeatherCollection implements \Countable
     }
 
     /**
-     * Get average temperature for current forecast
-     * @return float
+     * Get average temperature of collection
+     * @return float|null
      */
     public function averageTemperature(): float|null
     {
@@ -173,8 +192,8 @@ class WeatherCollection implements \Countable
     }
 
     /**
-     * Get average max temperature for current forecast
-     * @return float
+     * Get average maximum temperature of collection
+     * @return float|null
      */
     public function averageMaxTemperature(): float|null
     {
@@ -182,8 +201,8 @@ class WeatherCollection implements \Countable
     }
 
     /**
-     * Get average min temperature for current forecast
-     * @return float
+     * Get average minimum temperature of collection
+     * @return float|null
      */
     public function averageMinTemperature(): float|null
     {
@@ -191,7 +210,7 @@ class WeatherCollection implements \Countable
     }
 
     /**
-     * Get average temperature for current forecast considering human perception
+     * Get average temperature of collection considering human perception
      * @return float|null
      */
     public function averageFeelsLike(): float|null
@@ -200,7 +219,7 @@ class WeatherCollection implements \Countable
     }
 
     /**
-     * Get average humidity for current forecast
+     * Get average humidity of collection
      * @return float|null
      */
     public function averageHumidity(): float|null
@@ -209,7 +228,7 @@ class WeatherCollection implements \Countable
     }
 
     /**
-     * Get average visibility for current forecast
+     * Get average visibility of collection
      * @return float|null
      */
     public function averageVisibility(): float|null
@@ -218,7 +237,7 @@ class WeatherCollection implements \Countable
     }
 
     /**
-     * Get average pressure for current forecast
+     * Get average pressure of collection
      * @return float|null
      */
     public function averagePressure(): float|null
@@ -227,7 +246,7 @@ class WeatherCollection implements \Countable
     }
 
     /**
-     * Get average cloudiness for current forecast
+     * Get average cloudiness of collection
      * @return float|null
      */
     public function averageClouds(): float|null
@@ -236,32 +255,46 @@ class WeatherCollection implements \Countable
     }
 
     /**
-     * Checks if it will rain during the forecast period by evaluating precipitation probabilities assuming that when probability is less than 50% it will not rain
+     * Checks if it will rain during the forecast period by evaluating precipitation probabilities assuming that when probability is less than 50% it will not rain. Returns false when no rain precipitaion data is available
      * @return bool
      */
     public function willItRain(): bool
     {
-        foreach ($this->collection as $weather) {
-            $rain[] = $weather->getRain() ? $weather->getProbabilityOfPrecipitation() >= 0.5 : false;
-        }
-
-        $trueValues = count(array_filter($rain));
-
-        return $trueValues >= count($rain) - $trueValues;
+        return $this->willIt('rain');
     }
 
     /**
-     * Checks if it will snow during the forecast period by evaluating precipitation probabilities assuming that when probability is less than 50% it will not snow
+     * Checks if it will snow during the forecast period by evaluating precipitation probabilities assuming that when probability is less than 50% it will not rain. Returns false when no snow precipitaion data is available
      * @return bool
      */
     public function willItSnow(): bool
     {
-        foreach ($this->collection as $weather) {
-            $rain[] = $weather->getSnow() ? $weather->getProbabilityOfPrecipitation() >= 0.5 : false;
+        return $this->willIt('snow');
+    }
+
+    /**
+     * Checks if it will snow or rain during the forecast period by evaluating precipitation probabilities assuming that when probability is less than 50% it will not snow. Returns false when no precipitaion data is available
+     * @param string $precipitation Precipitation type:
+     * - snow
+     * - rain
+     *
+     * @throws \InvalidArgumentException Thrown when `precipitation` is neither snow nor rain
+     * @return bool
+     */
+    private function willIt(string $precipitation): bool
+    {
+        if (!in_array($precipitation, ['snow', 'rain'])) {
+            throw new \InvalidArgumentException('Invalid argument provided.');
         }
 
-        $trueValues = count(array_filter($rain));
+        $method = 'get' . ucfirst($precipitation);
 
-        return $trueValues >= count($rain) - $trueValues;
+        foreach ($this->collection as $weather) {
+            $values[] = $weather->$method() ? $weather->getProbabilityOfPrecipitation() >= 0.5 : false;
+        }
+
+        $trueValues = count(array_filter($values));
+
+        return $trueValues >= count($values) - $trueValues;
     }
 }
