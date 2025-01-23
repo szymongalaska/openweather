@@ -34,11 +34,7 @@ class OpenWeatherDate extends \DateTime
      */
     private function setDateFormat(): void
     {
-        $this->dateFormat = preg_replace(
-            '/d|D|j|l|N|S|w|z/',
-            Config::configuration()->get('day_format'),
-            Config::configuration()->get('date_format') . ' ' . Config::configuration()->get('time_format')
-        );
+        $this->dateFormat = Config::configuration()->get('date_format') . ' ' . Config::configuration()->get('time_format');
     }
 
     /**

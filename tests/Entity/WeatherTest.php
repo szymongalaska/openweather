@@ -24,7 +24,7 @@ class WeatherTest extends BaseTestCase
 
     public function test_get_last_update_time_returns_formatted_date(): void
     {
-        $this->assertSame('Wednesday/09/2024 13:59', $this->weather->getDate());
+        $this->assertSame('18/09/2024 13:59', $this->weather->getDate());
     }
 
     public function test_is_raining_returns_value(): void

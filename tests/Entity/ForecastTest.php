@@ -17,7 +17,7 @@ class ForecastTest extends BaseTestCase
         // Manually set forecast time
         $weatherList = $this->fixture('forecast')['list'];
         $weatherList[0]['dt'] = time(); // forecast now
-        $weatherList[1]['dt'] = time() + 3 * 3600; // forecast +3 hours
+        $weatherList[1]['dt'] = time() + 3600; // forecast +1 hour
         $weatherList[2]['dt'] = time() + 24 * 3600; // forecast tomorrow
 
         $this->weatherList = $weatherList;

@@ -33,8 +33,7 @@ final class Config
      * - api_key: string - The API key for accessing the OpenWeather API.
      * - language: string - The language code (ISO 639-1) for API responses. Defaults to 'en'.
      * - date_format: string - PHP date format for displaying dates (default 'd/m/Y').
-     * - time_format: string - PHP date format for displaying times (default 'H:i').
-     * - day_format: string - PHP date format for displaying days of the week (replaces day format in `date_format`, default 'l').
+     * - time_format: string - PHP date format for displaying time (default 'H:i').
      * - timezone: string - PHP supported timezone (default 'UTC')
      * - units: metric|imperial|standard - The unit of temperature and measure: 'metric' for Celsius / metric, 'imperial' for Fahrenheit / imperial, 'standard' for Kelvin / metric.
      */
@@ -56,8 +55,7 @@ final class Config
      * - api_key: string - The API key for accessing the OpenWeather API.
      * - language: string - The language code (ISO 639-1) for API responses. Defaults to 'en'.
      * - date_format: string - PHP date format for displaying dates (default 'd/m/Y').
-     * - time_format: string - PHP date format for displaying times (default 'H:i').
-     * - day_format: string - PHP date format for displaying days of the week (replaces day format in `date_format`, default 'l').
+     * - time_format: string - PHP date format for displaying time (default 'H:i').
      * - timezone: string - PHP supported timezone (default 'UTC')
      * - units: metric|imperial|standard - The unit of temperature and measure: 'metric' for Celsius / metric, 'imperial' for Fahrenheit / imperial, 'standard' for Kelvin / metric.
      *

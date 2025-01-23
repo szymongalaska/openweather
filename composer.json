@@ -1,7 +1,7 @@
 {
-    "name": "bejblade/open-weather",
-    "description": "A simple PHP wrapper for OpenWeatherMap API",
-    "keywords": ["openweathermap", "weather", "api"],
+    "name": "bejblade/openweather",
+    "description": "A PHP library for interacting with the OpenWeather API.",
+    "keywords": ["openweathermap", "openweather", "weather", "api"],
     "authors": [
         {
             "name": "Szymon Gałąska",

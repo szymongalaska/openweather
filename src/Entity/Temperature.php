@@ -83,9 +83,9 @@ class Temperature
     private function setUnits(): void
     {
         $this->units = match (Config::configuration()->get('units')) {
-            'metric' => 'Celsius',
-            'imperial' => 'Fahrenheit',
-            default => 'Kelvin'
+            'metric' => 'C',
+            'imperial' => 'F',
+            default => 'K'
         };
     }
 
