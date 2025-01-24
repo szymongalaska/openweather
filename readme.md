@@ -10,6 +10,35 @@ A PHP library for interacting with the OpenWeather API, providing tools for retr
   - One Call API (current, hourly, and daily forecast)
   - Historical weather data
 
+## Installation
+
+Install the library via Composer:
+
+```bash
+composer require bejblade/openweather
+```
+
+## Configuration
+
+The `Config` class is used to manage global settings for the library. You can set following options:
+
+- `api_key` (Required): Your OpenWeather API key.
+- `language`: Language for API responses (default 'en').
+- `date_format`: Date format used in dates of API data. PHP date format for displaying dates (default 'd/m/Y').
+- `time_format`: Time format used in dates of API data. PHP date format for displaying time (default 'H:i').
+- `timezone`: Some data from the API is returned only in the UTC timezone. Set this option to convert the data to your selected timezone. PHP supported timezone (default 'UTC')
+- `units`: Units for temperature and measure, API data will be recieved in this format. (default metric)
+  - `metric`: Celsius/Metric
+  - `imperial`: Fahrenheit/Imperial
+  - `standard`: Kelvin/Metric
+
+Some of the options can be set in .env file:
+
+- `api_key`: `OPENWEATHER_API_KEY`,
+- `language`: `OPENWEATHER_LANGUAGE`
+
+By default, only `api_key` is required, other options will be loaded with default settings.
+
 ## Basic setup
 
 ```php
@@ -39,35 +68,6 @@ echo 'Temperature: ' . $weather->temperature()->get().'°'.$weather->temperature
 if($location->getWeather()->isRaining()) // You can also access weather through location objects
     echo "It's raining";
 ```
-
-## Installation
-
-Install the library via Composer:
-
-```bash
-composer require bejblade/openweather
-```
-
-## Configuration
-
-The `Config` class is used to manage global settings for the library. You can set following options:
-
-- `api_key` (Required): Your OpenWeather API key.
-- `language`: Language for API responses (default 'en').
-- `date_format`: Date format used in dates of API data. PHP date format for displaying dates (default 'd/m/Y').
-- `time_format`: Time format used in dates of API data. PHP date format for displaying time (default 'H:i').
-- `timezone`: Some data from the API is returned only in the UTC timezone. Set this option to convert the data to your selected timezone. PHP supported timezone (default 'UTC')
-- `units`: Units for temperature and measure, API data will be recieved in this format. (default metric)
-  - `metric`: Celsius/Metric
-  - `imperial`: Fahrenheit/Imperial
-  - `standard`: Kelvin/Metric
-
-Some of the options can be set in .env file:
-
-- `api_key`: `OPENWEATHER_API_KEY`,
-- `language`: `OPENWEATHER_LANGUAGE`
-
-By default, only `api_key` is required, other options will be loaded with default settings.
 
 ## Contributing
 
