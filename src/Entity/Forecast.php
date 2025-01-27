@@ -307,4 +307,57 @@ class Forecast implements \Countable
 
         return $trueValues >= count($values) - $trueValues;
     }
+
+    /**
+     * Get the day with the highest temperature
+     * @return Weather
+     */
+    public function getMaxTemperatureDay(): Weather
+    {
+        return $this->filterExtreme(function($current, $value){
+            return $current->temperature()->getMaximum() > $value->temperature()->getMaximum();
+        });
+    } 
+
+
+    /**
+     * Get the day with the lowest temperature
+     * @return Weather
+     */
+    public function getMinTemperatureDay(): Weather
+    {
+        return $this->filterExtreme(function($current, $value){
+            return $current->temperature()->getMinimum() < $value->temperature()->getMinimum();
+        });
+    }
+    
+    /**
+     * Get the day with the highest cloudiness
+     * @return Weather
+     */
+    public function getCloudiestDay(): Weather
+    {
+        return $this->filterExtreme(function($current, $value) {
+            return $current->getClouds() > $value->getClouds();
+        });
+    }
+
+    /**
+     * Filter extreme value from collection
+     * @param callable $comparison Comparison function
+     * @return Weather|null
+     */
+    private function filterExtreme(callable $comparison): Weather
+    {
+        $day = null;
+
+        foreach($this->collection as $weather)
+        {
+            if($day === null || $comparison($weather, $day)) {
+                $day = $weather;
+            }
+        }
+
+        return $day;
+    }
 }

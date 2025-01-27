@@ -3,6 +3,7 @@
 namespace Tests;
 
 use Bejblade\OpenWeather\Entity\Forecast;
+use Bejblade\OpenWeather\Entity\Weather;
 
 class ForecastTest extends BaseTestCase
 {
@@ -129,5 +130,24 @@ class ForecastTest extends BaseTestCase
         $this->forecast = new Forecast($forecastFixture, $this->fixture('forecast')['city']['timezone']);
 
         $this->assertFalse($this->forecast->willItSnow());
+    }
+
+    public function test_get_max_temperature_day_returns_correct_day(): void
+    {
+        $expected = $this->forecast->all()[0]; // Day with maximum temperature
+        $this->assertSame($expected, $this->forecast->getMaxTemperatureDay());
+    }
+
+    public function test_get_min_temperature_day_returns_correct_day(): void
+    {
+        $expected = $this->forecast->all()[2]; // Day with minimum temperature
+        $this->assertSame($expected, $this->forecast->getMinTemperatureDay());
+    }
+
+    public function test_get_cloudiest_day_returns_correct_day(): void
+
+    {
+        $expected = $this->forecast->all()[0]; // Day with most clouds
+        $this->assertSame($expected, $this->forecast->getCloudiestDay());
     }
 }
