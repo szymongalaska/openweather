@@ -70,7 +70,7 @@ class OpenWeatherTest extends BaseTestCase
         $this->endpointMock->expects($this->once())->method('call')->with(['lat' => '51.5156177', 'lon' => '-0.0919983', 'limit' => 1])->willReturn([$this->location]);
         $this->openWeather->expects($this->once())->method('getEndpoint')->with('geo.reverse')->willReturn($this->endpointMock);
 
-        $actual = $this->openWeather->findLocationByCoords('51.5156177', '-0.0919983')[0];
+        $actual = $this->openWeather->findLocationByCoords('51.5156177', '-0.0919983');
         $this->assertSame($this->location, $actual);
     }
 
