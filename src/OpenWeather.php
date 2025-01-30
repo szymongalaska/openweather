@@ -183,7 +183,13 @@ class OpenWeather
      */
     public function findLocationByCoords(string $lat, string $lon, int $limit = 1): Entity\Location|array
     {
-        return $this->getEndpoint('geo.reverse')->call(['lat' => $lat, 'lon' => $lon, 'limit' => $limit]);
+        $result = $this->getEndpoint('geo.reverse')->call(['lat' => $lat, 'lon' => $lon, 'limit' => $limit]);
+        
+        if ($limit == 1) {
+            return $result[0];
+        }
+
+        return $result;
     }
 
     /**
