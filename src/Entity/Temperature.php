@@ -160,4 +160,13 @@ class Temperature
     {
         return $this->night;
     }
+
+    /**
+     * Get units of temperature
+     * @return string
+     */
+    public function getUnits(): string
+    {
+        return $this->units;
+    }
 }
