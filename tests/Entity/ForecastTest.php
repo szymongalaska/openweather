@@ -20,6 +20,8 @@ class ForecastTest extends BaseTestCase
         $weatherList[0]['dt'] = time(); // forecast now
         $weatherList[1]['dt'] = time() + 3600; // forecast +1 hour
         $weatherList[2]['dt'] = time() + 24 * 3600; // forecast tomorrow
+        $weatherList[3]['dt'] = time() + 48 * 3600;
+        $weatherList[4]['dt'] = time() + 72 * 3600;
 
         $this->weatherList = $weatherList;
 
