@@ -310,14 +310,14 @@ class AirPollution
     public function all(): array
     {
         return [
-            'co' => $this->co,
-            'no' => $this->no,
-            'no2' => $this->no2,
-            'o3' => $this->o3,
-            'so2' => $this->so2,
-            'pm2_5' => $this->pm2_5,
-            'pm10' => $this->pm10,
-            'nh3' => $this->nh3
+            'co' => ['value' => $this->co, 'index' => $this->getCarbonMonoxideDescription()],
+            'no' => ['value' => $this->no],
+            'no2' => ['value' => $this->no2, 'index' => $this->getNitrogenDioxideDescription()],
+            'o3' => ['value' => $this->o3, 'index' => $this->getOzoneDescription()],
+            'so2' => ['value' => $this->so2, $this->getSulphurDioxideDescription()],
+            'pm2.5' => ['value' => $this->pm2_5, 'index' => $this->getFineParticlesMatterDescription()],
+            'pm10' => ['value' => $this->pm10, 'index' => $this->getCoarseParticulateMatterDescription()],
+            'nh3' => ['value' => $this->nh3]
         ];
     }
 }
